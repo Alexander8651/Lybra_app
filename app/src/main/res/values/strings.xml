@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Lybra_app</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="tipoDocumento">
+        <item>Selecciona el tipo de documento</item>
+        <item>CC</item>
+        <item>Tarjeta identidad</item>
+        <item>Nit</item>
+    </string-array>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/drawerinicio"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="Inicio" />
+    <item
+        android:id="@+id/personasConfianza"
+        android:icon="@drawable/ic_baseline_assignment_ind_24"
+        android:title="Personas de confianza" />
+    <item
+        android:icon="@drawable/ic_baseline_assignment_24"
+        android:title="Reporte enviados" />
+    <item
+        android:icon="@drawable/ic_baseline_filter_frames_24"
+        android:title="Archivos" />
+    <item
+        android:icon="@drawable/ic_baseline_notifications_24"
+        android:title="Notificaciones" />
+    <item
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="Configuraciones" />
+    <item
+        android:icon="@drawable/ic_baseline_video_library_24"
+        android:title="Video tutorial" />
+    <item
+        android:id="@+id/salirFragment"
+        android:icon="@drawable/ic_baseline_exit_to_app_24"
+        android:title="Salir" />
+</menu>

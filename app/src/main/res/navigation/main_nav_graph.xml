@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.MainFragment"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_salirFragment"
+            app:destination="@id/salirFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_directorioFragment"
+            app:destination="@id/personasConfianza" />
+    </fragment>
+    <fragment
+        android:id="@+id/salirFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.SalirFragment"
+        android:label="fragment_salir"
+        tools:layout="@layout/fragment_salir" />
+    <fragment
+        android:id="@+id/personasConfianza"
+        android:name="com.amatai.lybra_app.ui.fragments.DirectorioFragment"
+        android:label="fragment_directorio"
+        tools:layout="@layout/fragment_directorio" />
+</navigation>
