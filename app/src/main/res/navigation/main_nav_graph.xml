@@ -28,8 +28,7 @@
         tools:layout="@layout/fragment_directorio" >
         <action
             android:id="@+id/action_personasConfianza_to_agragarContactoFragment"
-            app:destination="@id/agragarContactoFragment"
-            app:enterAnim="an" />
+            app:destination="@id/agragarContactoFragment" />
     </fragment>
     <fragment
         android:id="@+id/agragarContactoFragment"

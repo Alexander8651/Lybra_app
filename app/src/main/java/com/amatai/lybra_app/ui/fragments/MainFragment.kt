@@ -69,7 +69,7 @@ class MainFragment : Fragment(), LifecycleOwner {
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
     val COUNTDOWN_TIME_VIDEO_RECORDED = 600000L
     lateinit var timerGrabancionVideo: CountDownTimer
-    lateinit var videoCapture: VideoCapture
+    var videoCapture: VideoCapture? = null
 
     val ONE_SECOND = 1000L
     val COUNTDOWN_TIME = 3000L
@@ -80,13 +80,18 @@ class MainFragment : Fragment(), LifecycleOwner {
     //Solicitud de localizacion
     var locationRequest: LocationRequest? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        inicializarLocationRequest()
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
@@ -146,7 +151,7 @@ class MainFragment : Fragment(), LifecycleOwner {
         //boton para la grabacion
         mainFragmentBinding.botonPararGrabacion.setOnClickListener{
             timerGrabancionVideo.cancel()
-            videoCapture.stopRecording()
+            videoCapture!!.stopRecording()
             grabacion.visibility = View.GONE
         }
     }
@@ -154,8 +159,6 @@ class MainFragment : Fragment(), LifecycleOwner {
 
     @SuppressLint("MissingPermission")
     fun enviarMensajeTexto() {
-
-        inicializarLocationRequest()
         var lat = 0.0
         var long = 0.0
         fusedLocationClient.lastLocation
@@ -259,7 +262,7 @@ class MainFragment : Fragment(), LifecycleOwner {
         )
 
         Toast.makeText(context, "Inicio Grabacion", Toast.LENGTH_SHORT).show()
-        videoCapture.startRecording(file, object : VideoCapture.OnVideoSavedListener {
+        videoCapture!!.startRecording(file, object : VideoCapture.OnVideoSavedListener {
 
             override fun onVideoSaved(file: File?) {
                 Toast.makeText(

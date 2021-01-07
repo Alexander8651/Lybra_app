@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
+import android.os.Bundle
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -108,6 +109,11 @@ class PlayerService : Service() {
 
     private class miLocalizacionLitener : LocationListener {
         var mensajesEnviados = 0
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {}
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
         @InternalCoroutinesApi
         override fun onLocationChanged(location: Location) {
@@ -136,11 +142,11 @@ class PlayerService : Service() {
 
                             for (i in it) {
                                 // Log.d("numero", i.numberPhone)
-                                //Log.d("numero", usuarioLogueado.toString())
+                                Log.d("numero", usuarioLogueado.toString())
                                 sms.sendTextMessage(
                                     i.number_Phone,
                                     null,
-                                    "${usuarioLogueado.name} puede estar en peligro, llamalo al ${usuarioLogueado.phone_number} o su ubicacion actual es https://www.google.com/maps/search/?api=1&query=$lat,$long",
+                                    "${usuarioLogueado.name} llamalo al ${usuarioLogueado.phone_number}. https://www.google.com/maps/search/?api=1&query=$lat,$long",
                                     null,
                                     null
                                 )
@@ -150,7 +156,6 @@ class PlayerService : Service() {
                     }
                 }
             }
-
         }
     }
 
