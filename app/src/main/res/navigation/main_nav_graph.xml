@@ -25,5 +25,15 @@
         android:id="@+id/personasConfianza"
         android:name="com.amatai.lybra_app.ui.fragments.DirectorioFragment"
         android:label="fragment_directorio"
-        tools:layout="@layout/fragment_directorio" />
+        tools:layout="@layout/fragment_directorio" >
+        <action
+            android:id="@+id/action_personasConfianza_to_agragarContactoFragment"
+            app:destination="@id/agragarContactoFragment"
+            app:enterAnim="an" />
+    </fragment>
+    <fragment
+        android:id="@+id/agragarContactoFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.AgragarContactoFragment"
+        android:label="fragment_agragar_contacto"
+        tools:layout="@layout/fragment_agragar_contacto" />
 </navigation>

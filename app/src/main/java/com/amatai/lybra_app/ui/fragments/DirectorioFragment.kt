@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amatai.lybra_app.R
@@ -55,6 +56,10 @@ class DirectorioFragment : Fragment() {
             }
             adapterDirectorio.submitList(it)
         })
+
+        bindingDirectorioFragment.agregarContacto.setOnClickListener {
+            it.findNavController().navigate(R.id.action_personasConfianza_to_agragarContactoFragment)
+        }
 
 
 
