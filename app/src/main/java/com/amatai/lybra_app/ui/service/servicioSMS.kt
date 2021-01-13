@@ -132,19 +132,18 @@ class PlayerService : Service() {
             uiScope.launch {
 
                 var usuarioLogueado = repository.obtenerUsuarioLogueado()
-                val obtenerDirectorioSqlite = repository.obtenerDirectorioSqlite()
+                val obtenerDirectorioSqlite = repository.obtenerContactosConfianzaSqlite()
 
                 obtenerDirectorioSqlite.collect {
 
                     if (mensajesEnviados == 0) {
                         if (!it.isNullOrEmpty()) {
                             val sms = SmsManager.getDefault()
-
                             for (i in it) {
                                 // Log.d("numero", i.numberPhone)
                                 Log.d("numero", usuarioLogueado.toString())
                                 sms.sendTextMessage(
-                                    i.number_Phone,
+                                    i.number_phone,
                                     null,
                                     "${usuarioLogueado.name} llamalo al ${usuarioLogueado.phone_number}. https://www.google.com/maps/search/?api=1&query=$lat,$long",
                                     null,

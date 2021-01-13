@@ -1,10 +1,13 @@
 package com.amatai.lybra_app.ui.adapters
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.amatai.lybra_app.R
 import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
 import com.amatai.lybra_app.databinding.ContactoitemBinding
 
@@ -25,6 +28,12 @@ class ContactosAdapter ():ListAdapter<ContactosEntity, ContactosAdapter.Viewhold
         fun bind(item:ContactosEntity){
             bindingAdapter.item = item
             bindingAdapter.executePendingBindings()
+
+            itemView.setOnClickListener {
+                val bundle = Bundle()
+                bundle.putParcelable("contacto", item)
+                it.findNavController().navigate(R.id.action_personasConfianza_to_editarContactoFragment, bundle)
+            }
         }
         companion object{
             fun from (parent: ViewGroup):Viewholder{
@@ -37,7 +46,7 @@ class ContactosAdapter ():ListAdapter<ContactosEntity, ContactosAdapter.Viewhold
 
     class ContactosDiffCallback : DiffUtil.ItemCallback<ContactosEntity>(){
         override fun areItemsTheSame(oldItem: ContactosEntity, newItem: ContactosEntity): Boolean {
-            return newItem.idLlavePrimaria == oldItem.idLlavePrimaria
+            return newItem.number_phone== oldItem.number_phone
         }
 
         override fun areContentsTheSame(

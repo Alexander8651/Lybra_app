@@ -15,24 +15,56 @@
         <action
             android:id="@+id/action_mainFragment_to_directorioFragment"
             app:destination="@id/personasConfianza" />
+        <action
+            android:id="@+id/action_mainFragment_to_archivosFragment"
+            app:destination="@id/archivosFragment" />
     </fragment>
     <fragment
         android:id="@+id/salirFragment"
         android:name="com.amatai.lybra_app.ui.fragments.SalirFragment"
-        android:label="fragment_salir"
+        android:label=" Salir"
         tools:layout="@layout/fragment_salir" />
     <fragment
         android:id="@+id/personasConfianza"
         android:name="com.amatai.lybra_app.ui.fragments.DirectorioFragment"
-        android:label="fragment_directorio"
-        tools:layout="@layout/fragment_directorio" >
+        android:label="Personas de confianza"
+        tools:layout="@layout/fragment_directorio">
         <action
             android:id="@+id/action_personasConfianza_to_agragarContactoFragment"
-            app:destination="@id/agragarContactoFragment" />
+            app:destination="@id/agragarContactoFragment"
+            app:enterAnim="@anim/slide_in_top"
+            app:exitAnim="@anim/slide_out_button"
+            app:popEnterAnim="@anim/slide_in_botton"
+            app:popExitAnim="@anim/slide_out_top" />
+        <action
+            android:id="@+id/action_personasConfianza_to_editarContactoFragment"
+            app:destination="@id/editarContactoFragment"
+            app:enterAnim="@anim/zoom_in"
+            app:exitAnim="@anim/zoomoutt"
+            app:popEnterAnim="@anim/zoominn"
+            app:popExitAnim="@anim/zoom_out" />
     </fragment>
     <fragment
         android:id="@+id/agragarContactoFragment"
         android:name="com.amatai.lybra_app.ui.fragments.AgragarContactoFragment"
-        android:label="fragment_agragar_contacto"
+        android:label="Agregar contacto"
         tools:layout="@layout/fragment_agragar_contacto" />
+    <fragment
+        android:id="@+id/editarContactoFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.EditarContactoFragment"
+        tools:layout="@layout/fragment_editar_contacto" />
+    <fragment
+        android:id="@+id/archivosFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.ArchivosFragment"
+        android:label="Archivos"
+        tools:layout="@layout/fragment_archivos">
+        <action
+            android:id="@+id/action_archivosFragment_to_archivosDetalleFragment"
+            app:destination="@id/archivosDetalleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/archivosDetalleFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.ArchivosDetalleFragment"
+        android:label="fragment_archivos_detalle"
+        tools:layout="@layout/fragment_archivos_detalle" />
 </navigation>

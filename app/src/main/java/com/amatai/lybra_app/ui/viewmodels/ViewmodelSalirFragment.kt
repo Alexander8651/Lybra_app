@@ -30,7 +30,13 @@ class ViewmodelSalirFragment(private val reposotiry: Repository) : ViewModel() {
         }
     }
 
-    val obtenerDirectorio = reposotiry.obtenerDirectorioSqlite().asLiveData()
+    val obtenerDirectorio = liveData {
+        try {
+            emit(reposotiry.obtenerDirectorioSqlite())
+        }catch (e:Exception){
+
+        }
+    }
 
     fun borrarUsuarioLogueado(usuarioLogueado: UsuarioLogueado) {
         viewModelScope.launch {

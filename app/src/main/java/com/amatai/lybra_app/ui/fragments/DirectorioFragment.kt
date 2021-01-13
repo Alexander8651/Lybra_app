@@ -2,10 +2,8 @@ package com.amatai.lybra_app.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
@@ -50,19 +48,20 @@ class DirectorioFragment : Fragment() {
 
         adapterDirectorio = ContactosAdapter()
 
-        viewmodelDirectorioFragment.obtenerDirecotioSqlite().asLiveData().observe(viewLifecycleOwner, Observer {
+        viewmodelDirectorioFragment.obtenerDirecotioSqlite().observe(viewLifecycleOwner, Observer {
             bindingDirectorioFragment.rvDirectorio.apply {
                 adapter = adapterDirectorio
             }
             adapterDirectorio.submitList(it)
+            Log.d("directorioaao", it.toString())
         })
 
         bindingDirectorioFragment.agregarContacto.setOnClickListener {
             it.findNavController().navigate(R.id.action_personasConfianza_to_agragarContactoFragment)
         }
 
-
-
-
     }
+
+
 }
+

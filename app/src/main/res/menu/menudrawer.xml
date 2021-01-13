@@ -13,6 +13,7 @@
         android:icon="@drawable/ic_baseline_assignment_24"
         android:title="Reporte enviados" />
     <item
+        android:id="@+id/archivosFragment"
         android:icon="@drawable/ic_baseline_filter_frames_24"
         android:title="Archivos" />
     <item

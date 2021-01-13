@@ -6,7 +6,6 @@
     <string-array name="tipoDocumento">
         <item>Selecciona el tipo de documento</item>
         <item>CC</item>
-        <item>Tarjeta identidad</item>
         <item>Nit</item>
     </string-array>
 </resources>
