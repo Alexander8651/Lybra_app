@@ -1,6 +1,7 @@
 package com.amatai.lybra_app.ui.adapters
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -51,6 +52,7 @@ class VideoAdapter:ListAdapter<VideoEntity, VideoAdapter.Viewholder>(VideoDiffUt
             }
 
             binding.deleteButton.setOnClickListener {
+                Log.d("videoseliminado", item.toString())
                 uiScope.launch {
                     repository.actualizarEstadoVideoSqlite(item)
                 }

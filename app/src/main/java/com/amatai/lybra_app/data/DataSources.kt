@@ -115,12 +115,13 @@ class DataSources (private val appDatabase: AppDatabase){
     }
 
     suspend fun actualizarEstadoVideoSqlite(videoEntity: VideoEntity){
-        val nombre = videoEntity.path!!.subSequence(32..41 )
-        Log.d("substring", nombre.toString())
+        val nombre = videoEntity.path!!.subSequence(55..64 )
+        //Log.d("substring", videoEntity.path)
         val video: VideoEntity
 
         val fecha = SimpleDateFormat(FILENAME_FORMAT).format(System.currentTimeMillis())
         Log.d("substring", fecha)
+        Log.d("substring", nombre.toString())
 
 
         video = if (nombre == fecha){

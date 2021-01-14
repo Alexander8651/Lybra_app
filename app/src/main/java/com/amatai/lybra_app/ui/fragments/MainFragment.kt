@@ -2,16 +2,21 @@ package com.amatai.lybra_app.ui.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.SurfaceTexture
 import android.location.Location
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.provider.Contacts
+import android.provider.Settings
 import android.telephony.SmsManager
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.TextureView
+import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -156,21 +161,32 @@ class MainFragment : Fragment(), LifecycleOwner {
                 if (contadorInicioGrabacion != 3){
                     Toast.makeText(requireContext(), "presione ${presionarParaGrabar} veces para grabar", Toast.LENGTH_SHORT).show()
                 }else{
-                    Toast.makeText(requireContext(), "Iniciando grabacion", Toast.LENGTH_SHORT).show()
+                    if (checkIfLocationOpened()){
+                        Toast.makeText(requireContext(), "Iniciando grabacion", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 if (contadorInicioGrabacion == 3) {
                     contadorInicioGrabacion = 0
 
-                    enviarMensajeTexto()
                     //iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
 
                     //val intent = Intent(requireContext(), GrabarVideoActivity::class.java)
                     //requireActivity().startActivity(intent)
 
                     if (allPermissionsGranted()) {
-                        if (sesionGrabacion == 0) {
-                            viewFinder.post { startCamera() }
+                        Log.d("gpsActivo", checkIfLocationOpened().toString())
+                        if (checkIfLocationOpened()){
+                            enviarMensajeTexto()
+                            if (sesionGrabacion == 0) {
+                                viewFinder.post { startCamera() }
+                            }
+                        }else{
+                            AlertDialog.Builder(requireContext())
+                                .setMessage("Antes de grabar debes activar el gps")
+                                .setPositiveButton("Aceptar"){dialog, which ->
+                                    dialog.dismiss()
+                                }.show()
                         }
 
                     } else {
@@ -360,6 +376,15 @@ class MainFragment : Fragment(), LifecycleOwner {
             }
         })
 
+    }
+
+    private fun checkIfLocationOpened(): Boolean {
+        val provider: String = Settings.Secure.getString(
+            requireActivity().contentResolver,
+            Settings.Secure.LOCATION_PROVIDERS_ALLOWED
+        )
+        println("Provider contains=> $provider")
+        return provider.contains("gps")
     }
     /*
             videoCapture.startRecording(

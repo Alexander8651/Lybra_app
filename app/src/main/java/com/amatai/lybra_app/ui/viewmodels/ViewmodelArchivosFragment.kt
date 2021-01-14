@@ -10,7 +10,7 @@ import com.amatai.lybra_app.databasemanager.toVideoVisible
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
-class ViewmodelArchivosFragment(private val repository: Repository) :ViewModel(){
+class ViewmodelArchivosFragment(private val repository: Repository) : ViewModel() {
 
     private val FILENAME_FORMAT = "yyyy-MM-dd"
 
@@ -23,38 +23,38 @@ class ViewmodelArchivosFragment(private val repository: Repository) :ViewModel()
 
 
 
-            for (i in video){
+            for (i in video) {
 
                 Log.d("videos", i.toString())
-                if (i.estado == 1){
+                if (i.estado == 1) {
                     videos.add(i)
                 }
 
-                val nombre = i.path!!.subSequence(32..41 )
-                Log.d("substring", nombre.toString())
+                val nombre = i.path!!.subSequence(55..64)
+                // Log.d("substring", nombre.toString())
 
                 val fecha = SimpleDateFormat(FILENAME_FORMAT).format(System.currentTimeMillis())
-                Log.d("substring", fecha)
+                //Log.d("substring", fecha)
 
-                if (nombre != fecha){
+                if (nombre != fecha) {
                     repository.actualizarEstadoVideoSqlite(i.toVideoVisible())
                 }
 
 
-                    if (i.estado == 3){
-                        videos.remove(i)
-                    }
 
+                if (i.estado == 3) {
+                    videos.remove(i)
+                }
 
 
             }
             emit(videos)
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
     }
 
-    fun uptualizarEstadoVideo(videoEntity: VideoEntity){
+    fun actualizarEstadoVideo(videoEntity: VideoEntity) {
         viewModelScope.launch {
             repository.actualizarEstadoVideoSqlite(videoEntity)
         }
