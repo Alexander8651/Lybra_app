@@ -65,5 +65,7 @@ class ArchivosDetalleFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         requireActivity().window.statusBarColor =  resources.getColor(R.color.colorPrimary)
+        (activity as MainActivity).supportActionBar!!.show()
+
     }
 }

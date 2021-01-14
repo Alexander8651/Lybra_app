@@ -3,13 +3,12 @@ package com.amatai.lybra_app.ui.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.SurfaceTexture
 import android.location.Location
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Environment
-import android.provider.MediaStore
+import android.os.Handler
 import android.telephony.SmsManager
 import android.util.Log
 import android.view.*
@@ -22,16 +21,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
-import com.amatai.lybra_app.R
 import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
 import com.amatai.lybra_app.databasemanager.AppDatabase
 import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
 import com.amatai.lybra_app.databasemanager.entities.VideoEntity
 import com.amatai.lybra_app.databinding.FragmentMainBinding
-import com.amatai.lybra_app.ui.activities.GrabarVideoActivity
 import com.amatai.lybra_app.ui.activities.MainActivity
 import com.amatai.lybra_app.ui.viewmodels.VMFactory
 import com.amatai.lybra_app.ui.viewmodels.ViewmodelMainFragment
@@ -46,6 +42,7 @@ import java.util.*
 
 class MainFragment : Fragment(), LifecycleOwner {
 
+
     val viewmodelMainFragment by viewModels<ViewmodelMainFragment> {
         VMFactory(
             RepositoryImpl(
@@ -55,13 +52,13 @@ class MainFragment : Fragment(), LifecycleOwner {
     }
 
 
-
     companion object {
         var sessionLogueo: String? = null
         var usuarioLogueado: UsuarioLogueado? = null
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
     private val REQUIRED_PERMISSIONS =
         arrayOf(
@@ -79,14 +76,15 @@ class MainFragment : Fragment(), LifecycleOwner {
 
     lateinit var binding: FragmentMainBinding
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
-    val COUNTDOWN_TIME_VIDEO_RECORDED = 600000L
+    val COUNTDOWN_TIME_VIDEO_RECORDED = 60000L
     lateinit var timerGrabancionVideo: CountDownTimer
     lateinit var videoCapture: VideoCapture
     var grabando = false
-
     val ONE_SECOND = 1000L
     val COUNTDOWN_TIME = 3000L
     lateinit var timer: CountDownTimer
+
+    var contadorInicioGrabacion = 0
 
     private lateinit var viewFinder: TextureView
 
@@ -135,62 +133,59 @@ class MainFragment : Fragment(), LifecycleOwner {
 
         (activity as MainActivity).supportActionBar!!.title = ""
 
-        if (grabando){
+        if (grabando) {
             binding.grabacion.visibility = View.VISIBLE
             binding.grabandoVideo.visibility = View.VISIBLE
-        }else{
+        } else {
             binding.grabacion.visibility = View.GONE
             binding.grabandoVideo.visibility = View.GONE
         }
 
 
-        binding.botonPanico.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
-                    override fun onFinish() {
-                        enviarMensajeTexto()
-                        //iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+        binding.botonPanico.setOnClickListener {
+            if (contadorInicioGrabacion < 3) {
 
-                        //val intent = Intent(requireContext(), GrabarVideoActivity::class.java)
-                        //requireActivity().startActivity(intent)
+                var presionarParaGrabar = 0
+                contadorInicioGrabacion++
 
-                        if (allPermissionsGranted()) {
-                            if (sesionGrabacion == 0) {
-                                viewFinder.post { startCamera() }
-                            }
+                when (contadorInicioGrabacion) {
+                    1 -> presionarParaGrabar = 2
+                    2 -> presionarParaGrabar = 1
+                }
 
-                        } else {
-                            ActivityCompat.requestPermissions(
-                                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-                            )
+                if (contadorInicioGrabacion != 3){
+                    Toast.makeText(requireContext(), "presione ${presionarParaGrabar} veces para grabar", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(requireContext(), "Iniciando grabacion", Toast.LENGTH_SHORT).show()
+                }
+
+                if (contadorInicioGrabacion == 3) {
+                    contadorInicioGrabacion = 0
+
+                    enviarMensajeTexto()
+                    //iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+
+                    //val intent = Intent(requireContext(), GrabarVideoActivity::class.java)
+                    //requireActivity().startActivity(intent)
+
+                    if (allPermissionsGranted()) {
+                        if (sesionGrabacion == 0) {
+                            viewFinder.post { startCamera() }
                         }
-                    }
 
-                    override fun onTick(millisUntilFinished: Long) {
-                        var tiempoRestante = 0
-                        when {
-                            millisUntilFinished > 1998.toLong() -> tiempoRestante = 3
-                            millisUntilFinished == 1998.toLong() || millisUntilFinished == 1997.toLong() -> tiempoRestante =
-                                2
-                            millisUntilFinished < 1997.toLong() -> tiempoRestante = 1
-                        }
-                        //binding.textoEnvioMensaje.textSize = 30F
-                        binding.textoEnvioMensaje.text =
-                            "se enviara el mensaje en $tiempoRestante"
+                    } else {
+                        ActivityCompat.requestPermissions(
+                            requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+                        )
                     }
-                }.start()
-            } else {
-                timer.cancel()
-                binding.textoEnvioMensaje.textSize = 15F
-                binding.textoEnvioMensaje.text =
-                    "Presiona el boton en caso de encontrase en peligro"
+                }
             }
-            false
         }
 
         binding.botonPararGrabacion.setOnClickListener {
-            timerGrabancionVideo.cancel()
             videoCapture.stopRecording()
+            timerGrabancionVideo.cancel()
+
             grabacion.visibility = View.GONE
         }
 
@@ -232,6 +227,10 @@ class MainFragment : Fragment(), LifecycleOwner {
                             })
                     })
             }
+
+        if (sesionGrabacion == 1) {
+            iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+        }
     }
 
     private fun allPermissionsGranted(): Boolean {
@@ -273,14 +272,20 @@ class MainFragment : Fragment(), LifecycleOwner {
 
 
         preview.setOnPreviewOutputUpdateListener {
-            //viewFinder.surfaceTexture = it.surfaceTexture
 
         }
 
         // Bind use cases to lifecycle
         CameraX.bindToLifecycle(this, preview, videoCapture)
-        iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+
         sesionGrabacion = 1
+
+        val runnable = Runnable {
+            iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+        }
+        val handler = Handler()
+        handler.postDelayed(runnable, 200)
+
 
     }
 
@@ -302,6 +307,13 @@ class MainFragment : Fragment(), LifecycleOwner {
             }
 
         }.start()
+
+        val file = File(
+            requireActivity().externalMediaDirs.first(),
+            SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".mp4"
+        )
+
+        /*
         val file = File(
             "/storage/emulated/0/",
             "videoslybra"
@@ -315,9 +327,11 @@ class MainFragment : Fragment(), LifecycleOwner {
             file,
             SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".mp4"
         )
+         */
+
 
         //Toast.makeText(context, "Inicio Grabacion", Toast.LENGTH_SHORT).show()
-        videoCapture.startRecording(video, object : VideoCapture.OnVideoSavedListener {
+        videoCapture.startRecording(file, object : VideoCapture.OnVideoSavedListener {
 
             override fun onVideoSaved(file: File?) {
                 grabando = false
@@ -345,32 +359,37 @@ class MainFragment : Fragment(), LifecycleOwner {
                 //Log.i(tag, "Video Error: $message")
             }
         })
-    }
 
+    }
     /*
-    videoCapture!!.startRecording(video,ContextCompat.getMainExecutor(requireContext()), object : VideoCapture.OnVideoSavedCallback{
-        override fun onVideoSaved(outputFileResults: VideoCapture.OutputFileResults) {
-            val video = VideoEntity(
-                null,
-                file!!.path,
-                1
-            )
+            videoCapture.startRecording(
+            video,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : VideoCapture.OnVideoSavedCallback {
+                override fun onVideoSaved(file: File) {
+                    val video = VideoEntity(
+                        null,
+                        file!!.path,
+                        1
+                    )
 
-            viewmodelMainFragment.agregarVideosSqlite(video)
+                    viewmodelMainFragment.agregarVideosSqlite(video)
 
-            Toast.makeText(
-                context,
-                "el video se guardo aqui ${video.path}",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+                    Toast.makeText(
+                        context,
+                        "el video se guardo aqui ${video.path}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
-        override fun onError(videoCaptureError: Int, message: String, cause: Throwable?) {
-            //Log.i(tag, "Video Error: $message")
-        }
+                override fun onError(videoCaptureError: Int, message: String, cause: Throwable?) {
+                    //Log.i(tag, "Video Error: $message")
+                }
 
-    })
-    }
-
+            })
      */
+
+
 }
+
+
