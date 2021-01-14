@@ -24,6 +24,8 @@ class ViewmodelArchivosFragment(private val repository: Repository) :ViewModel()
 
 
             for (i in video){
+
+                Log.d("videos", i.toString())
                 if (i.estado == 1){
                     videos.add(i)
                 }
@@ -35,9 +37,14 @@ class ViewmodelArchivosFragment(private val repository: Repository) :ViewModel()
                 Log.d("substring", fecha)
 
                 if (nombre != fecha){
-                    videos.add(i)
                     repository.actualizarEstadoVideoSqlite(i.toVideoVisible())
                 }
+
+
+                    if (i.estado == 3){
+                        videos.remove(i)
+                    }
+
 
 
             }
