@@ -1,14 +1,8 @@
 package com.amatai.lybra_app.data.repositories
 
 import com.amatai.lybra_app.data.DataSources
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
-import com.amatai.lybra_app.databasemanager.toVideoEscondido
-import com.amatai.lybra_app.requestmanager.apiresponses.ContactosResponse
-import com.amatai.lybra_app.requestmanager.apiresponses.LogueoResponse
-import com.amatai.lybra_app.requestmanager.apiresponses.UserResponse
+import com.amatai.lybra_app.databasemanager.entities.*
+import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 
@@ -106,5 +100,61 @@ class RepositoryImpl(private val datasource: DataSources):Repository {
 
     override suspend fun actualizarEstadoVideoSqlite(videoEntity: VideoEntity) {
         datasource.actualizarEstadoVideoSqlite(videoEntity)
+    }
+
+    override suspend fun listarAlertasApi(token: String): List<ResportesResponse> {
+        return datasource.listarAlertasApi(token)
+    }
+
+    override suspend fun agredarReportesSqlite(reportes: List<ReportesEntity>) {
+        datasource.agredarReportesSqlite(reportes)
+    }
+
+    override suspend fun obtenerReportesSqlite(): List<ReportesEntity> {
+        return datasource.obtenerReportesSqlite()
+    }
+
+    override suspend fun agredarReporte(reporte: ReportesEntity) {
+        datasource.agredarReporte(reporte)
+    }
+
+    override suspend fun obtenerReportesSinSincronizarSqlite(): List<ReportesEntity> {
+        return datasource.obtenerReportesSinSincronizarSqlite()
+    }
+
+    override suspend fun actualizarReporteSqlite(reportes: ReportesEntity) {
+        datasource.actualizarReporteSqlite(reportes)
+    }
+
+    override suspend fun borrarReportes(reportes: List<ReportesEntity>) {
+        datasource.borrarReportes(reportes)
+    }
+
+    override suspend fun registrarReporteApi(dataReporte: JsonObject): ResportesResponse {
+        return datasource.registrarReporteApi(dataReporte)
+    }
+
+    override suspend fun guardarConfiguraciones(configuracion: Configuracion) {
+        datasource.guardarConfiguraciones(configuracion)
+    }
+
+    override suspend fun actualizarConfiguraciones(configuracion: Configuracion) {
+        datasource.actualizarConfiguraciones(configuracion)
+    }
+
+    override suspend fun obtenerConfiguraciones(): Configuracion {
+        return datasource.obtenerConfiguraciones()
+    }
+
+    override suspend fun listarNotificaciones(token: String): List<Notification> {
+        return datasource.listarNotificaciones(token)
+    }
+
+    override suspend fun guardarAudio(audio: AudioEntity) {
+        datasource.guardarAudio(audio)
+    }
+
+    override suspend fun obtenerAudios(): List<AudioEntity> {
+        return datasource.obtenerAudios()
     }
 }

@@ -5,13 +5,10 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
+import com.amatai.lybra_app.databasemanager.entities.*
 
 
-@Database(entities = [UsuarioLogueado::class, ContactosEntity::class, SessionLogueo::class,VideoEntity::class], version = 1)
+@Database(entities = [UsuarioLogueado::class, ContactosEntity::class, SessionLogueo::class,VideoEntity::class,ReportesEntity::class, Configuracion::class, AudioEntity::class], version = 1)
 abstract class AppDatabase:RoomDatabase(){
 
     abstract fun appDao():AppDao

@@ -130,4 +130,83 @@ data class VideoEntity(
     */
 ) : Parcelable
 
+@Parcelize
+@Entity(tableName = "audioentity")
+data class AudioEntity(
+
+    @PrimaryKey
+    val llavePrimariaLocal: Int? = null,
+
+    @ColumnInfo(name = "path")
+    val path: String? = null,
+
+    @ColumnInfo(name = "estado")
+    val estado: Int? = null
+    /*
+    1 -> agregado
+    2 -> escondido
+    3 -> borrado
+    */
+) : Parcelable
+
+@Entity(tableName = "resportes")
+data class ReportesEntity (
+
+    @PrimaryKey
+    val llavePrimariaLocal: Int? = null,
+
+    @ColumnInfo(name = "estado")
+    val estado: Int? = null,
+
+    @ColumnInfo(name = "id")
+    val id:Int? = null,
+
+    @ColumnInfo(name = "location")
+    val location:String? = null,
+
+    @ColumnInfo(name = "longitude")
+    val longitude:String? = null,
+
+    @ColumnInfo(name = "latitude")
+    val latitude:String? = null,
+
+    @ColumnInfo(name = "user_id")
+    val user_id:Int? = null,
+
+    @ColumnInfo(name = "created_at")
+    val created_at:String? = null,
+
+    @ColumnInfo(name = "created_rg")
+    val created_rg:String? = null,
+
+    @ColumnInfo(name = "updated_at")
+    val updated_at:String? = null,
+
+    @ColumnInfo(name = "address")
+    val address:String? = null,
+
+    @ColumnInfo(name = "city")
+    val city:String? = null
+
+)
+
+@Entity(tableName = "configuracion")
+data class Configuracion(
+
+    @PrimaryKey
+    val llavePrimaria:Int? = null,
+
+    @ColumnInfo(name = "grabarVideoAudio")
+    val grabarVideoAudio:Boolean? = false,
+
+    @ColumnInfo(name = "botonPanico")
+    val botonPanico:Boolean? = false,
+
+    @ColumnInfo(name = "enviarMensaje")
+    val enviarMensaje:Boolean? = false,
+
+    @ColumnInfo(name = "activarNotificacion")
+    val activarNotificacion:Boolean? = false
+)
+
 

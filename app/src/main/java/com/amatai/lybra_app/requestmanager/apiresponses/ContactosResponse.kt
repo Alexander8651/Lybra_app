@@ -9,6 +9,6 @@ data class ContactosResponse(
     val is_trusted:Int = 0,
     val type_status_id:Int = 0,
     val user_id: Int,
-    val created_at:String =  "2",
+    val created_at:String =  "",
     val updated_at:String =  ""
 )

@@ -5,26 +5,41 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.amatai.lybra_app.data.repositories.Repository
+import com.amatai.lybra_app.databasemanager.entities.AudioEntity
 import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
+import com.amatai.lybra_app.databasemanager.entities.ReportesEntity
 import com.amatai.lybra_app.databasemanager.entities.VideoEntity
-import com.amatai.lybra_app.databasemanager.toContactoEntity
 import com.amatai.lybra_app.databasemanager.toContactoEntityList
+import com.amatai.lybra_app.databasemanager.toReporteEntity
+import com.amatai.lybra_app.ui.fragments.MainFragment.Companion.usuarioLogueado
 import com.google.gson.JsonObject
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import kotlin.Exception
 
 class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
+
 
     val obtenerContactosConfianzaSqlite = repository.obtenerContactosConfianzaSqlite()
 
     val obtenerUsuarioLogueado = liveData {
         try {
+
             emit(repository.obtenerUsuarioLogueado())
+
+
         } catch (e: Exception) {
 
         }
     }
+
+    val obtenerConfiguracion = liveData {
+        try {
+            emit(repository.obtenerConfiguraciones())
+        } catch (e: Exception) {
+
+        }
+    }
+
 
     fun obtenerContactosSinSincronizar() {
         viewModelScope.launch {
@@ -192,9 +207,95 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
     fun agregarVideosSqlite(videoEntity: VideoEntity) {
         viewModelScope.launch {
             repository.agregarVideosSqlite(videoEntity)
-
         }
     }
 
 
+    fun listarReporte(token: String) {
+        viewModelScope.launch {
+            try {
+
+                val respotesrSqlite = repository.obtenerReportesSqlite()
+
+                if (respotesrSqlite.isNullOrEmpty()) {
+                    val reportes = repository.listarAlertasApi(token)
+
+                    repository.agredarReportesSqlite(reportes::toReporteEntity.invoke())
+                    Log.d("reportes", reportes.toString())
+
+                }
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
+    fun crearRepote(repote: ReportesEntity) {
+        viewModelScope.launch {
+            repository.agredarReporte(repote)
+        }
+    }
+
+
+    fun sincronizarReportes() {
+        viewModelScope.launch {
+            try {
+
+                val reportesSinsincronozar = repository.obtenerReportesSinSincronizarSqlite()
+
+                for (i in reportesSinsincronozar) {
+                    val dataReposteSincronizando = JsonObject()
+
+                    Log.d("createat", i.created_at!!)
+
+                    Log.d("reportesincronizado", i.toString())
+
+
+                    dataReposteSincronizando.addProperty("user_id", usuarioLogueado!!.id)
+                    dataReposteSincronizando.addProperty("location", i.location)
+                    dataReposteSincronizando.addProperty("created_rg", i.created_at)
+                    dataReposteSincronizando.addProperty("latitude", i.latitude)
+                    dataReposteSincronizando.addProperty("longitude", i.longitude)
+                    dataReposteSincronizando.addProperty("address", i.address)
+                    dataReposteSincronizando.addProperty("city", i.city)
+
+                    val reporteSincronizado =
+                        repository.registrarReporteApi(dataReposteSincronizando)
+
+                    val reporteActualizar = ReportesEntity(
+                        i.llavePrimariaLocal,
+                        1,
+                        reporteSincronizado.id,
+                        reporteSincronizado.location,
+                        reporteSincronizado.longitude,
+                        reporteSincronizado.latitude,
+                        reporteSincronizado.user_id,
+                        reporteSincronizado.created_at,
+                        reporteSincronizado.created_rg,
+                        reporteSincronizado.updated_at,
+                        reporteSincronizado.address,
+                        reporteSincronizado.city
+                    )
+
+                    repository.actualizarReporteSqlite(reporteActualizar)
+
+                    Log.d("reporteactualizado", reporteActualizar.city.toString())
+
+
+                }
+
+            } catch (e: Exception) {
+                Log.d("estaexcepcion", e.toString())
+            }
+        }
+
+
+    }
+
+    fun guardarAudio(audioEntity: AudioEntity) {
+        viewModelScope.launch {
+            repository.guardarAudio(audioEntity)
+
+        }
+    }
 }

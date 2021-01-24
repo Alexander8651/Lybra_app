@@ -1,11 +1,11 @@
 package com.amatai.lybra_app.databasemanager
 
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
 import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
+import com.amatai.lybra_app.databasemanager.entities.ReportesEntity
 import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
 import com.amatai.lybra_app.databasemanager.entities.VideoEntity
 import com.amatai.lybra_app.requestmanager.apiresponses.ContactosResponse
+import com.amatai.lybra_app.requestmanager.apiresponses.ResportesResponse
 import com.amatai.lybra_app.requestmanager.apiresponses.UserResponse
 
 fun UserResponse.toUserLogueado() = UsuarioLogueado(
@@ -38,6 +38,23 @@ fun ContactosResponse.toContactoEntity() = ContactosEntity(
     user_id,
     created_at,
     updated_at
+)
+
+fun List<ResportesResponse>.toReporteEntity() = map(ResportesResponse::toReporteEntity)
+fun ResportesResponse.toReporteEntity() = ReportesEntity(
+    null,
+    1,
+    id,
+    location,
+    longitude,
+    latitude,
+    user_id,
+    created_at,
+    created_rg,
+    updated_at,
+    address,
+    city
+
 )
 
 fun VideoEntity.toVideoEscondido() = VideoEntity(

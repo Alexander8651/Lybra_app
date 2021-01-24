@@ -4,19 +4,18 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
-import android.location.Location
+import android.location.*
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Environment
 import android.os.Handler
-import android.provider.Contacts
 import android.provider.Settings
 import android.telephony.SmsManager
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -26,12 +25,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import com.amatai.lybra_app.R
 import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
 import com.amatai.lybra_app.databasemanager.AppDatabase
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
+import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databinding.FragmentMainBinding
 import com.amatai.lybra_app.ui.activities.MainActivity
 import com.amatai.lybra_app.ui.viewmodels.VMFactory
@@ -40,7 +40,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.coroutines.*
 import java.io.File
+import java.io.IOException
+import java.lang.Runnable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,11 +59,23 @@ class MainFragment : Fragment(), LifecycleOwner {
         )
     }
 
-
     companion object {
         var sessionLogueo: String? = null
         var usuarioLogueado: UsuarioLogueado? = null
+        var geocoder: Geocoder? = null
+
+        lateinit var contextFragment: Context
+        lateinit var contactosEnviarMensaje: List<ContactosEntity>
+        lateinit var ubicacion: LocationManager
+
+        var configuracion: Configuracion? = null
+
+
     }
+
+    lateinit var recorder: MediaRecorder
+    lateinit var archivo: File
+
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -81,7 +96,8 @@ class MainFragment : Fragment(), LifecycleOwner {
 
     lateinit var binding: FragmentMainBinding
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
-    val COUNTDOWN_TIME_VIDEO_RECORDED = 60000L
+    private val FILENAME_FORMATt = "yyyy-MM dd-HH-mm"
+    val COUNTDOWN_TIME_VIDEO_RECORDED = 600000L
     lateinit var timerGrabancionVideo: CountDownTimer
     lateinit var videoCapture: VideoCapture
     var grabando = false
@@ -109,15 +125,49 @@ class MainFragment : Fragment(), LifecycleOwner {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         binding = FragmentMainBinding.inflate(inflater, container, false)
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+        ubicacion = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
+        contextFragment = requireContext()
+
+        recorder = MediaRecorder()
+
+
+        Log.d(
+            "providersss",
+            ubicacion.isProviderEnabled(LocationManager.PASSIVE_PROVIDER).toString()
+        )
+
 
         context ?: binding.root
         inicializarLocationRequest()
         viewFinder = binding.viewFinder
+        //contactosEnviarMensaje = listOf<ContactosEntity>()
 
         viewmodelMainFragment.obtenerContactosSinSincronizar()
         viewmodelMainFragment.borrarContactosApi()
         viewmodelMainFragment.actualizarContactoApi()
+        viewmodelMainFragment.sincronizarReportes()
+
+        viewmodelMainFragment.obtenerContactosConfianzaSqlite.asLiveData()
+            .observe(viewLifecycleOwner,
+                androidx.lifecycle.Observer {
+                    contactosEnviarMensaje = it
+                    Log.d("meejecuto", it.toString())
+                })
+
+
+
+        miLocalizacionLitener.toastDesplegado.observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer {
+                Log.d("toastttt", it.toString())
+                if (it == 1) {
+                    Toast.makeText(requireContext(), "Se envio mensaje", Toast.LENGTH_SHORT).show()
+                    miLocalizacionLitener.toastDesplegado.value = 0
+                }
+            })
 
 
         viewmodelMainFragment.obtenerUsuarioLogueado.observe(
@@ -133,6 +183,8 @@ class MainFragment : Fragment(), LifecycleOwner {
         viewmodelMainFragment.obtenerSessionLogueo()
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 sessionLogueo = it.access_token
+                Log.d("tokennn", sessionLogueo!!)
+                viewmodelMainFragment.listarReporte(sessionLogueo!!)
 
             })
 
@@ -146,107 +198,155 @@ class MainFragment : Fragment(), LifecycleOwner {
             binding.grabandoVideo.visibility = View.GONE
         }
 
+      bontonPanico()
 
-        binding.botonPanico.setOnClickListener {
-            if (contadorInicioGrabacion < 3) {
-
-                var presionarParaGrabar = 0
-                contadorInicioGrabacion++
-
-                when (contadorInicioGrabacion) {
-                    1 -> presionarParaGrabar = 2
-                    2 -> presionarParaGrabar = 1
-                }
-
-                if (contadorInicioGrabacion != 3){
-                    Toast.makeText(requireContext(), "presione ${presionarParaGrabar} veces para grabar", Toast.LENGTH_SHORT).show()
-                }else{
-                    if (checkIfLocationOpened()){
-                        Toast.makeText(requireContext(), "Iniciando grabacion", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                if (contadorInicioGrabacion == 3) {
-                    contadorInicioGrabacion = 0
-
-                    //iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
-
-                    //val intent = Intent(requireContext(), GrabarVideoActivity::class.java)
-                    //requireActivity().startActivity(intent)
-
-                    if (allPermissionsGranted()) {
-                        Log.d("gpsActivo", checkIfLocationOpened().toString())
-                        if (checkIfLocationOpened()){
-                            enviarMensajeTexto()
-                            if (sesionGrabacion == 0) {
-                                viewFinder.post { startCamera() }
-                            }
-                        }else{
-                            AlertDialog.Builder(requireContext())
-                                .setMessage("Antes de grabar debes activar el gps")
-                                .setPositiveButton("Aceptar"){dialog, which ->
-                                    dialog.dismiss()
-                                }.show()
-                        }
-
-                    } else {
-                        ActivityCompat.requestPermissions(
-                            requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-                        )
-                    }
-                }
-            }
-        }
 
         binding.botonPararGrabacion.setOnClickListener {
             videoCapture.stopRecording()
             timerGrabancionVideo.cancel()
-
             grabacion.visibility = View.GONE
+
+            if (miLocalizacionLitener.remover != null) {
+                ubicacion.removeUpdates(miLocalizacionLitener.remover!!)
+            }
         }
 
         return binding.root
     }
 
+    private fun bontonPanico() {
+        viewmodelMainFragment.obtenerConfiguracion.observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer {
+
+                configuracion = it
+                Log.d("configaracionn", configuracion.toString())
+                if (configuracion !=  null){
+                    if (configuracion!!.botonPanico!!){
+                        if (configuracion?.botonPanico!!) {
+                            binding.botonPanico.setOnClickListener {
+                                if (contadorInicioGrabacion < 2) {
+
+                                    var presionarParaGrabar = 0
+                                    contadorInicioGrabacion++
+
+                                    when (contadorInicioGrabacion) {
+                                        1 -> presionarParaGrabar = 1
+                                    }
+
+                                    if (contadorInicioGrabacion != 2) {
+                                        if (configuracion?.grabarVideoAudio!!){
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "presione ${presionarParaGrabar} veces para grabar",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }else{
+                                            if (configuracion?.enviarMensaje!!){
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "presione ${presionarParaGrabar} vez para enviar mensaje",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    } else {
+                                        if (configuracion?.grabarVideoAudio!!) {
+                                            if (checkIfLocationOpened()) {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "Iniciando grabacion",
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                    .show()
+                                            }
+                                        }
+                                    }
+
+                                    if (contadorInicioGrabacion == 2) {
+                                        contadorInicioGrabacion = 0
+
+                                        if (configuracion?.grabarVideoAudio!!) {
+                                            if (allPermissionsGranted()) {
+                                                //Log.d("gpsActivo", checkIfLocationOpened().toString())
+                                                if (checkIfLocationOpened()) {
+                                                    enviarMensajeTexto()
+                                                    if (sesionGrabacion == 0) {
+                                                        viewFinder.post { startCamera() }
+                                                    }
+                                                } else {
+                                                    AlertDialog.Builder(requireContext())
+                                                        .setMessage("Antes de grabar debes activar el gps")
+                                                        .setPositiveButton("Aceptar") { dialog, which ->
+                                                            dialog.dismiss()
+                                                        }.show()
+                                                }
+
+                                            } else {
+                                                ActivityCompat.requestPermissions(
+                                                    requireActivity(),
+                                                    REQUIRED_PERMISSIONS,
+                                                    REQUEST_CODE_PERMISSIONS
+                                                )
+                                            }
+                                        }else{
+                                            if (configuracion?.enviarMensaje!!){
+                                                enviarMensajeTexto()
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }else {
+                   binding.botonPanico.setOnClickListener{
+                       Toast.makeText(
+                           requireContext(),
+                           "No diste permiso del botón paníco",
+                           Toast.LENGTH_SHORT
+                       ).show()
+                   }
+                }
+            })
+    }
+
 
     @SuppressLint("MissingPermission")
     fun enviarMensajeTexto() {
-        var lat = 0.0
-        var long = 0.0
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                lat = location!!.latitude
-                long = location.longitude
-                Log.d("ubicacion", "$lat $long")
-                viewmodelMainFragment.obtenerUsuarioLogueado.observe(
-                    viewLifecycleOwner,
-                    androidx.lifecycle.Observer { usuarioLogueado ->
 
-                        viewmodelMainFragment.obtenerContactosConfianzaSqlite.asLiveData()
-                            .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                                //Log.d("numero", "me ejecuto + $usuarioLogueado")
+        if (ubicacion.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            Log.d("localizacionn", "Red")
 
-                                if (!it.isNullOrEmpty()) {
-                                    val sms = SmsManager.getDefault()
-                                    for (i in it) {
-                                        Log.d("numero", it.toString())
-                                        //Log.d("numero", usuarioLogueado.toString())
-                                        sms.sendTextMessage(
-                                            i.number_phone,
-                                            null,
-                                            "${usuarioLogueado.name} puede estar en peligro, llamalo al ${usuarioLogueado.phone_number} https://www.google.com/maps/search/?api=1&query=$lat,$long",
-                                            null,
-                                            null
-                                        )
-                                    }
-                                }
-                            })
-                    })
-            }
+            ubicacion.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                0,
+                0.0F,
+                miLocalizacionLitener(viewmodelMainFragment)
+            )
+        } else {
+            Log.d("localizacionn", "Gps")
 
-        if (sesionGrabacion == 1) {
-            iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+            ubicacion.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                600000,
+                0.0F,
+                miLocalizacionLitener(viewmodelMainFragment)
+            )
         }
+
+      viewmodelMainFragment.obtenerConfiguracion.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+          Log.d("configuracionn", it.toString())
+          if (it != null){
+              if (it.grabarVideoAudio!!){
+                  if (sesionGrabacion == 1) {
+                      iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+                  }
+              }
+          }
+      })
     }
 
     private fun allPermissionsGranted(): Boolean {
@@ -305,9 +405,12 @@ class MainFragment : Fragment(), LifecycleOwner {
 
     }
 
+
+
     @SuppressLint("RestrictedApi")
     fun iniciarGrabacion(grabacion: LinearLayout, context: Context, grabandoVideo: TextView) {
         grabacion.visibility = View.VISIBLE
+        binding.botonPanico.isEnabled = false
         grabando = true
         var tiempo = 0
 
@@ -329,28 +432,19 @@ class MainFragment : Fragment(), LifecycleOwner {
             SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".mp4"
         )
 
-        /*
-        val file = File(
-            "/storage/emulated/0/",
-            "videoslybra"
-        )
-
-        //Log.d("rutaguardada", getOutputDirectory().toString() )
-
-        file.mkdir()
-
-        val video = File(
-            file,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".mp4"
-        )
-         */
-
 
         //Toast.makeText(context, "Inicio Grabacion", Toast.LENGTH_SHORT).show()
         videoCapture.startRecording(file, object : VideoCapture.OnVideoSavedListener {
 
+            @SuppressLint("MissingPermission")
             override fun onVideoSaved(file: File?) {
                 grabando = false
+
+
+                requireActivity().runOnUiThread {
+                    binding.botonPanico.isEnabled = true
+                }
+
 
                 val video = VideoEntity(
                     null,
@@ -362,7 +456,7 @@ class MainFragment : Fragment(), LifecycleOwner {
 
                 Toast.makeText(
                     context,
-                    "el video se guardo aqui $file",
+                    "Se creo el video",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -375,7 +469,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                 //Log.i(tag, "Video Error: $message")
             }
         })
-
     }
 
     private fun checkIfLocationOpened(): Boolean {
@@ -386,35 +479,210 @@ class MainFragment : Fragment(), LifecycleOwner {
         println("Provider contains=> $provider")
         return provider.contains("gps")
     }
-    /*
-            videoCapture.startRecording(
-            video,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : VideoCapture.OnVideoSavedCallback {
-                override fun onVideoSaved(file: File) {
-                    val video = VideoEntity(
-                        null,
-                        file!!.path,
-                        1
-                    )
 
-                    viewmodelMainFragment.agregarVideosSqlite(video)
+    private class miLocalizacionLitener(val viewmodelMainFragment: ViewmodelMainFragment) :
+        LocationListener {
 
-                    Toast.makeText(
-                        context,
-                        "el video se guardo aqui ${video.path}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        var envioMensaje = 0
+
+
+        companion object {
+            var remover: MainFragment.miLocalizacionLitener? = null
+            val toastDesplegado = MutableLiveData<Int>()
+        }
+
+        private val FILENAME_FORMATt = "yyyy-MM-dd HH-mm"
+
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {
+
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+        @InternalCoroutinesApi
+        override fun onLocationChanged(location: Location) {
+            //Log.d("localizacionn", location.toString())
+            var lat = location.latitude
+            var long = location.longitude
+            Log.d("ubicacion", "$lat $long")
+            Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
+            remover = this
+
+            val listener = this
+
+            val dataSources = DataSources(AppDatabase.getDatabase(MainActivity.context!!)!!)
+            val repository = RepositoryImpl(dataSources)
+
+            var job = Job()
+            var uiScope = CoroutineScope(job + Dispatchers.IO)
+
+
+            uiScope.launch {
+                Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
+
+
+                if (!contactosEnviarMensaje.isNullOrEmpty()) {
+                    Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
+                    val sms = SmsManager.getDefault()
+                    Log.d("numero", contactosEnviarMensaje.toString())
+
+
+                    for (i in contactosEnviarMensaje) {
+                        Log.d("numero", contactosEnviarMensaje.toString())
+                        //Log.d("numero", usuarioLogueado.toString())
+                        val mensaje =
+                            "${usuarioLogueado!!.name} puede estar en peligro, llama al ${usuarioLogueado!!.phone_number}https://www.google.com/maps/search/?api=1&query=$lat,$long"
+
+                        //
+                        if (envioMensaje == 0) {
+                            if (configuracion?.enviarMensaje!!) {
+                                sms.sendTextMessage(
+                                    i.number_phone,
+                                    null,
+                                    mensaje,
+                                    null,
+                                    null
+                                )
+                                toastDesplegado.postValue(1)
+                                ubicacion.removeUpdates(listener)
+                            }
+                        }
+
+                        try {
+                            var direccion: List<Address> = geocoder!!.getFromLocation(lat, long, 1)
+
+                            Log.d("localizacionn", direccion.toString())
+
+                            val ciudad =
+                                "Se envio desde ${direccion[0].locality + "," + direccion[0].adminArea + "," + direccion[0].countryName}"
+                            val direccionEnviado = direccion[0].getAddressLine(0)
+                            Log.d("reportecreado", ciudad.toString())
+                            Log.d("reportecreado", direccionEnviado.toString())
+
+                            val creado =
+                                SimpleDateFormat(FILENAME_FORMATt, Locale.US).format(
+                                    System.currentTimeMillis()
+                                )
+
+                            //Log.d("createat", creado)
+                            val mensajeApi =
+                                "https://www.google.com/maps/search/?api=1&query=$lat,$long"
+
+                            if (envioMensaje == 0) {
+                                val reporte = ReportesEntity(
+                                    null,
+                                    1,
+                                    0,
+                                    mensajeApi,
+                                    long.toString(),
+                                    lat.toString(),
+                                    usuarioLogueado!!.id,
+                                    creado,
+                                    creado,
+                                    creado,
+                                    direccionEnviado,
+                                    ciudad
+                                )
+                                Log.d("reportecreado", reporte.toString())
+                                viewmodelMainFragment.crearRepote(reporte)
+                                ubicacion.removeUpdates(listener)
+                            }
+                            envioMensaje = 1
+
+                        } catch (e: Exception) {
+                            Log.d("localizacionn", e.toString())
+                        }
+                    }
                 }
+            }
+        }
+    }
 
-                override fun onError(videoCaptureError: Int, message: String, cause: Throwable?) {
-                    //Log.i(tag, "Video Error: $message")
+    fun grabarAudio(){
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+        val path = File(
+            requireActivity().externalMediaDirs.first(),
+            "audio"
+        )
+
+        path.mkdir()
+
+        try {
+            archivo = File.createTempFile(SimpleDateFormat("yyyyMMddHHmm", Locale.US).format(System.currentTimeMillis()), ".3gp", path)
+        } catch (e: IOException) {
+        }
+
+        recorder.setOutputFile(archivo.absolutePath)
+        try {
+            recorder.prepare()
+        } catch (e: IOException) {
+        }
+        recorder.start()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menuaudio, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+
+            R.id.menuaudio -> {
+               // Log.d("configurrrr", configuracion.toString())
+                if (configuracion !=  null ){
+                 if (configuracion!!.grabarVideoAudio!!){
+                     var contador = 0
+                     grabarAudio()
+
+                     val alertDialog:AlertDialog.Builder = AlertDialog.Builder(requireContext())
+                     val li = LayoutInflater.from(requireContext())
+                     val promptsView: View = li.inflate(R.layout.layoutalertdialog, null)
+                     alertDialog.setView(promptsView)
+                     val tiempograbacion = promptsView.findViewById<TextView>(R.id.tiempoGrabacion)
+                     val timer:CountDownTimer
+                     timer = object :CountDownTimer(20000, 1000){
+                         override fun onFinish() {
+
+                         }
+
+                         override fun onTick(millisUntilFinished: Long) {
+                             contador++
+                             tiempograbacion.text = contador.toString()
+                         }
+
+                     }.start()
+                     alertDialog
+                         .setCancelable(false)
+                         .setPositiveButton("Parar"){dialog, which ->
+                             //Toast.makeText(requireContext(), archivo.absolutePath, Toast.LENGTH_SHORT).show()
+                             recorder.stop()
+                             val audioEntity = AudioEntity(
+                                 null,
+                                 archivo.toString(),
+                                 1
+                             )
+                             viewmodelMainFragment.guardarAudio(audioEntity)
+                         }.show()
+                 }
+                }else{
+                        Toast.makeText(
+                            requireContext(),
+                            "No diste permiso del botón paníco",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+
                 }
-
-            })
-     */
-
-
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
 
 

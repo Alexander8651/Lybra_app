@@ -1,6 +1,7 @@
 package com.amatai.lybra_app.ui.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -65,8 +66,17 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-      val intent = Intent(requireActivity(), PlayerService::class.java)
-        requireActivity().startService(intent)
+        viewmodelLogin.logueo.observe(viewLifecycleOwner, Observer {
+            if (it){
+
+                AlertDialog.Builder(requireContext())
+                    .setMessage("Autenticacion incorrecta")
+                    .setPositiveButton("Aceptar"){dialog, which ->
+                        dialog.dismiss()
+                    }.show()
+            }
+        })
+
 
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(

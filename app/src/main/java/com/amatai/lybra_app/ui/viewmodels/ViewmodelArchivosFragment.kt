@@ -36,15 +36,16 @@ class ViewmodelArchivosFragment(private val repository: Repository) : ViewModel(
                 val fecha = SimpleDateFormat(FILENAME_FORMAT).format(System.currentTimeMillis())
                 //Log.d("substring", fecha)
 
+                /*
                 if (nombre != fecha) {
                     repository.actualizarEstadoVideoSqlite(i.toVideoVisible())
                 }
 
-
-
                 if (i.estado == 3) {
                     videos.remove(i)
                 }
+
+                 */
 
 
             }

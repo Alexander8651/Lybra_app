@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+   <LinearLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:layout_margin="8dp">
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="80dp"
+           android:textSize="25sp"
+           android:textColor="@android:color/holo_purple"
+           android:text="Grabando: "/>
+
+       <TextView
+           android:id="@+id/tiempoGrabacion"
+           android:layout_width="wrap_content"
+           android:textColor="@android:color/holo_purple"
+           android:textSize="25sp"
+           android:layout_height="80dp"/>
+
+   </LinearLayout>
+
+</RelativeLayout>

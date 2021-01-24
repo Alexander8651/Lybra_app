@@ -17,7 +17,7 @@ class ViewmodelRegistrarseFragment(private val repository: Repository):ViewModel
                val dataNuevoUsuario = JsonObject()
 
                dataNuevoUsuario.addProperty("name", usuarioRegistro.nombres)
-               dataNuevoUsuario.addProperty("phone_number", usuarioRegistro.telefono.toInt())
+               dataNuevoUsuario.addProperty("phone_number", usuarioRegistro.telefono.toLong())
                dataNuevoUsuario.addProperty("address", usuarioRegistro.direccion)
                dataNuevoUsuario.addProperty("email", usuarioRegistro.correo)
                dataNuevoUsuario.addProperty("password", usuarioRegistro.contrasena)
@@ -25,9 +25,6 @@ class ViewmodelRegistrarseFragment(private val repository: Repository):ViewModel
                dataNuevoUsuario.addProperty("type_identification_id", usuarioRegistro.tipoDocumento)
                val registroResponse = repository.resgistrarUsuario(dataNuevoUsuario)
                Log.d("regristando", registroResponse.toString())
-
-
-
 
                emit(registroResponse)
 

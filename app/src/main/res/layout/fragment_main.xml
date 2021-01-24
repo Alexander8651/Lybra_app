@@ -13,7 +13,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Boton de panico"
+            android:text="Botón de pánico"
             android:textColor="@color/colorPrimary"
             android:textSize="25sp" />
 
@@ -23,7 +23,7 @@
             android:layout_height="40dp"
             android:layout_marginTop="15dp"
             android:textAlignment="center"
-            android:text="Presiona el boton en caso de encontrase en peligro"
+            android:text="Presiona el botón en caso de encontrarse en peligro"
             android:textColor="@android:color/holo_purple"
             android:textSize="15sp" />
 

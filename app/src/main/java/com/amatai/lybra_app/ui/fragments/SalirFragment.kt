@@ -68,6 +68,8 @@ class SalirFragment : Fragment() {
                 if (directorio != null){
                     viewmodelSalirFragment.borrarDirectorio(directorio!!)
                 }
+
+                viewmodelSalirFragment.borrarReportes()
                 requireActivity().finish()
             }
             .setNegativeButton("Cancelar"){dialog, which ->

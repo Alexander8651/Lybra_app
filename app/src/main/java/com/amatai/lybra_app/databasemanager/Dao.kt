@@ -1,10 +1,7 @@
 package com.amatai.lybra_app.databasemanager
 
 import androidx.room.*
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
+import com.amatai.lybra_app.databasemanager.entities.*
 import kotlinx.coroutines.flow.Flow
 
 
@@ -61,5 +58,38 @@ interface AppDao{
 
     @Update
     suspend fun actualizarEstadoVideo(videoEntity: VideoEntity)
+
+    @Insert
+    suspend fun agredarReportes(reportes:List<ReportesEntity>)
+
+    @Query("SELECT * FROM resportes")
+    suspend fun obtenerReportes():List<ReportesEntity>
+
+    @Insert
+    suspend fun agredarReporte(reportes:ReportesEntity)
+
+    @Query("SELECT * FROM resportes WHERE id == 0")
+    suspend fun obtenerReportesSinSincronizar():List<ReportesEntity>
+
+    @Update
+    suspend fun actualizarReporte(reportes:ReportesEntity)
+
+    @Delete
+    suspend fun borrarReportes(reportes:List<ReportesEntity>)
+
+    @Insert
+    suspend fun guardarConfiguraciones(configuracion: Configuracion)
+
+    @Update
+    suspend fun actualizarConfiguraciones(configuracion: Configuracion)
+
+    @Query("SELECT * FROM configuracion where llavePrimaria == 1")
+    suspend fun obtenerConfiguraciones():Configuracion
+
+    @Insert
+    suspend fun guardarAudio(audio: AudioEntity)
+
+    @Query("SELECT * FROM audioentity ")
+    suspend fun obtenerAudios():List<AudioEntity>
 
 }

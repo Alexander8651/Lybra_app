@@ -48,7 +48,7 @@ class VideoAdapter:ListAdapter<VideoEntity, VideoAdapter.Viewholder>(VideoDiffUt
             binding.playButton.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putParcelable("archivo", item)
-                it.findNavController().navigate(R.id.action_archivosFragment_to_archivosDetalleFragment, bundle)
+                it.findNavController().navigate(R.id.action_mainArchivosFragment_to_archivosDetalleFragment, bundle)
             }
 
             binding.deleteButton.setOnClickListener {

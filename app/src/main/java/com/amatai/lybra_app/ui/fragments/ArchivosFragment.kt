@@ -16,6 +16,7 @@ import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
 import com.amatai.lybra_app.databasemanager.AppDatabase
 import com.amatai.lybra_app.databinding.FragmentArchivosBinding
+import com.amatai.lybra_app.ui.activities.MainActivity
 import com.amatai.lybra_app.ui.adapters.VideoAdapter
 import com.amatai.lybra_app.ui.viewmodels.VMFactory
 import com.amatai.lybra_app.ui.viewmodels.ViewmodelArchivosFragment
@@ -64,6 +65,7 @@ class ArchivosFragment : Fragment() {
             }
         }
          */
+
 
         viewmodelArchivosFragment.obtenerVideosSqlite().observe(viewLifecycleOwner, Observer {
             binding.rvVideos.apply {

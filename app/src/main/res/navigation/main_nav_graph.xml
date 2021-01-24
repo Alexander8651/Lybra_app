@@ -16,8 +16,17 @@
             android:id="@+id/action_mainFragment_to_directorioFragment"
             app:destination="@id/personasConfianza" />
         <action
-            android:id="@+id/action_mainFragment_to_archivosFragment"
-            app:destination="@id/archivosFragment" />
+            android:id="@+id/action_mainFragment_to_reporteEnviadosFragment"
+            app:destination="@id/reporteEnviadosFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_configuracionesFragment"
+            app:destination="@id/configuracionesFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_notificacionesFragment"
+            app:destination="@id/notificacionesFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_mainArchivosFragment"
+            app:destination="@id/mainArchivosFragment" />
     </fragment>
     <fragment
         android:id="@+id/salirFragment"
@@ -54,17 +63,32 @@
         android:name="com.amatai.lybra_app.ui.fragments.EditarContactoFragment"
         tools:layout="@layout/fragment_editar_contacto" />
     <fragment
-        android:id="@+id/archivosFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.ArchivosFragment"
-        android:label="Archivos"
-        tools:layout="@layout/fragment_archivos">
-        <action
-            android:id="@+id/action_archivosFragment_to_archivosDetalleFragment"
-            app:destination="@id/archivosDetalleFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/archivosDetalleFragment"
         android:name="com.amatai.lybra_app.ui.fragments.ArchivosDetalleFragment"
         android:label="fragment_archivos_detalle"
         tools:layout="@layout/fragment_archivos_detalle" />
+    <fragment
+        android:id="@+id/reporteEnviadosFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.ReporteEnviadosFragment"
+        android:label="Reportes"
+        tools:layout="@layout/fragment_reporte_enviados" />
+    <fragment
+        android:id="@+id/configuracionesFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.ConfiguracionesFragment"
+        android:label="Configuraciones"
+        tools:layout="@layout/fragment_configuraciones" />
+    <fragment
+        android:id="@+id/notificacionesFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.NotificacionesFragment"
+        android:label="Notificaciones"
+        tools:layout="@layout/fragment_notificaciones" />
+    <fragment
+        android:id="@+id/mainArchivosFragment"
+        android:name="com.amatai.lybra_app.ui.fragments.MainArchivosFragment"
+        android:label="Archivos"
+        tools:layout="@layout/fragment_main_archivos">
+        <action
+            android:id="@+id/action_mainArchivosFragment_to_archivosDetalleFragment"
+            app:destination="@id/archivosDetalleFragment" />
+    </fragment>
 </navigation>

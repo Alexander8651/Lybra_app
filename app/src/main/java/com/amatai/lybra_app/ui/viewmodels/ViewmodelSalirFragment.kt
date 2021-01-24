@@ -38,6 +38,15 @@ class ViewmodelSalirFragment(private val reposotiry: Repository) : ViewModel() {
         }
     }
 
+    fun borrarReportes (){
+        viewModelScope.launch {
+
+            val reportes = reposotiry.obtenerReportesSqlite()
+
+            reposotiry.borrarReportes(reportes)
+        }
+    }
+
     fun borrarUsuarioLogueado(usuarioLogueado: UsuarioLogueado) {
         viewModelScope.launch {
             reposotiry.borrarUsuarioLogueado(usuarioLogueado)

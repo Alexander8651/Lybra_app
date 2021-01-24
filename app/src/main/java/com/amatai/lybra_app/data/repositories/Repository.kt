@@ -1,12 +1,7 @@
 package com.amatai.lybra_app.data.repositories
 
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
-import com.amatai.lybra_app.requestmanager.apiresponses.ContactosResponse
-import com.amatai.lybra_app.requestmanager.apiresponses.LogueoResponse
-import com.amatai.lybra_app.requestmanager.apiresponses.UserResponse
+import com.amatai.lybra_app.databasemanager.entities.*
+import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 
@@ -57,4 +52,34 @@ interface Repository {
     suspend fun obtenerVideosSqlite():List<VideoEntity>
 
     suspend fun actualizarEstadoVideoSqlite(videoEntity: VideoEntity)
+
+    suspend fun listarAlertasApi(token:String):List<ResportesResponse>
+
+    suspend fun agredarReportesSqlite(reportes:List<ReportesEntity>)
+
+    suspend fun obtenerReportesSqlite():List<ReportesEntity>
+
+    suspend fun agredarReporte(reporte:ReportesEntity)
+
+    suspend fun obtenerReportesSinSincronizarSqlite():List<ReportesEntity>
+
+    suspend fun actualizarReporteSqlite(reportes:ReportesEntity)
+
+    suspend fun borrarReportes(reportes:List<ReportesEntity>)
+
+    suspend fun registrarReporteApi(dataReporte:JsonObject): ResportesResponse
+
+    suspend fun guardarConfiguraciones(configuracion: Configuracion)
+
+
+    suspend fun actualizarConfiguraciones(configuracion: Configuracion)
+
+
+    suspend fun obtenerConfiguraciones():Configuracion
+
+    suspend fun listarNotificaciones(token:String):List<Notification>
+
+    suspend fun guardarAudio(audio: AudioEntity)
+
+    suspend fun obtenerAudios():List<AudioEntity>
 }

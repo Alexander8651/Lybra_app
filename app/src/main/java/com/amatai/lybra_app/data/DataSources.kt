@@ -1,25 +1,17 @@
 package com.amatai.lybra_app.data
 
 import android.util.Log
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.Insert
 import com.amatai.lybra_app.databasemanager.AppDatabase
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
-import com.amatai.lybra_app.databasemanager.toVideoBorrado
+import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databasemanager.toVideoEscondido
 import com.amatai.lybra_app.requestmanager.RetrofitService
-import com.amatai.lybra_app.requestmanager.apiresponses.ContactosResponse
-import com.amatai.lybra_app.requestmanager.apiresponses.LogueoResponse
-import com.amatai.lybra_app.requestmanager.apiresponses.UserResponse
+import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
-import java.io.File
-import java.text.DateFormat
+import retrofit2.http.Query
 import java.text.SimpleDateFormat
-import java.util.*
 
 class DataSources (private val appDatabase: AppDatabase){
 
@@ -117,24 +109,88 @@ class DataSources (private val appDatabase: AppDatabase){
     suspend fun actualizarEstadoVideoSqlite(videoEntity: VideoEntity){
         val nombre = videoEntity.path!!.subSequence(55..64 )
         //Log.d("substring", videoEntity.path)
-        val video: VideoEntity
+        var video: VideoEntity? = null
 
         val fecha = SimpleDateFormat(FILENAME_FORMAT).format(System.currentTimeMillis())
         Log.d("substring", fecha)
         Log.d("substring", nombre.toString())
 
 
-        video = if (nombre == fecha){
-            videoEntity.toVideoEscondido()
+         if (nombre == fecha){
+             video = videoEntity.toVideoEscondido()
         }else{
 
-            val path:String = videoEntity.path
-            val video:File = File(path)
+           // val path:String = videoEntity.path
+           // val video:File = File(path)
             //video.delete()
-            videoEntity.toVideoBorrado()
+            //videoEntity.toVideoBorrado()
 
         }
-        appDatabase.appDao().actualizarEstadoVideo(video)
+        appDatabase.appDao().actualizarEstadoVideo(video!!)
     }
+
+    suspend fun listarAlertasApi(token:String):List<ResportesResponse>{
+        return RetrofitService.retrofitService.listarAlertas(token).await()
+    }
+
+    suspend fun agredarReportesSqlite(reportes:List<ReportesEntity>){
+        appDatabase.appDao().agredarReportes(reportes)
+    }
+
+    suspend fun obtenerReportesSqlite():List<ReportesEntity>{
+        return  appDatabase.appDao().obtenerReportes()
+    }
+
+    suspend fun agredarReporte(reportes:ReportesEntity){
+        appDatabase.appDao().agredarReporte(reportes)
+    }
+
+    suspend fun obtenerReportesSinSincronizarSqlite():List<ReportesEntity>{
+        return appDatabase.appDao().obtenerReportesSinSincronizar()
+    }
+
+    suspend fun actualizarReporteSqlite(reportes:ReportesEntity){
+        appDatabase.appDao().actualizarReporte(reportes)
+    }
+
+    suspend fun borrarReportes(reportes:List<ReportesEntity>){
+        appDatabase.appDao().borrarReportes(reportes)
+    }
+
+    suspend fun registrarReporteApi(dataReporte:JsonObject): ResportesResponse {
+        return RetrofitService.retrofitService.registrarReporte(dataReporte).await()
+    }
+
+
+    suspend fun guardarConfiguraciones(configuracion: Configuracion){
+
+        appDatabase.appDao().guardarConfiguraciones(configuracion)
+
+    }
+
+
+    suspend fun actualizarConfiguraciones(configuracion: Configuracion){
+        appDatabase.appDao().actualizarConfiguraciones(configuracion)
+    }
+
+
+    suspend fun obtenerConfiguraciones():Configuracion{
+        return appDatabase.appDao().obtenerConfiguraciones()
+    }
+
+    suspend fun listarNotificaciones(token:String):List<Notification>{
+        return RetrofitService.retrofitService.listarNotificaciones(token).await()
+    }
+
+
+    suspend fun guardarAudio(audio: AudioEntity){
+        appDatabase.appDao().guardarAudio(audio)
+    }
+
+    suspend fun obtenerAudios():List<AudioEntity>{
+        return appDatabase.appDao().obtenerAudios()
+    }
+
+
 
 }

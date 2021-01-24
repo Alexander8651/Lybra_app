@@ -32,7 +32,6 @@ class RegistrarseFragment : Fragment() {
         VMFactory(RepositoryImpl(DataSources(AppDatabase.getDatabase(requireContext())!!)))
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {

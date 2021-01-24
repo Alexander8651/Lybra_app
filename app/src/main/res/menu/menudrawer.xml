@@ -11,15 +11,18 @@
         android:title="Personas de confianza" />
     <item
         android:icon="@drawable/ic_baseline_assignment_24"
+        android:id="@+id/reporteEnviadosFragment"
         android:title="Reporte enviados" />
     <item
-        android:id="@+id/archivosFragment"
+        android:id="@+id/mainArchivosFragment"
         android:icon="@drawable/ic_baseline_filter_frames_24"
         android:title="Archivos" />
     <item
+        android:id="@+id/notificacionesFragment"
         android:icon="@drawable/ic_baseline_notifications_24"
         android:title="Notificaciones" />
     <item
+        android:id="@+id/configuracionesFragment"
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="Configuraciones" />
     <item
@@ -28,5 +31,5 @@
     <item
         android:id="@+id/salirFragment"
         android:icon="@drawable/ic_baseline_exit_to_app_24"
-        android:title="Salir" />
+        android:title="Cerrar sesión" />
 </menu>

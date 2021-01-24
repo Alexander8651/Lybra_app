@@ -14,8 +14,10 @@
         android:layout_height="wrap_content">
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_margin="4dp"
+            android:layout_height="84dp"
+            android:layout_margin="6dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="20dp"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,14 +28,20 @@
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:text="@{itemvideo.path}"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="@{itemvideo.path.substring(55,71)}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:textColor="#730887"
+                    android:textSize="35sp"
+                    android:textStyle="italic"
+                    tools:text="2000"
+                    android:elevation="5dp"
+                    android:textAlignment="center"/>
 
                 <ImageButton
                     android:id="@+id/playButton"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="1dp"
                     android:src="@drawable/ic_baseline_play_arrow_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/deleteButton"
@@ -45,7 +53,7 @@
                     android:id="@+id/deleteButton"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="1dp"
                     android:backgroundTint="@android:color/holo_red_dark"
                     android:src="@drawable/ic_baseline_delete_24"
                     app:layout_constraintBottom_toBottomOf="parent"
