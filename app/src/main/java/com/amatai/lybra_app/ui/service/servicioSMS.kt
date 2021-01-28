@@ -81,7 +81,6 @@ class PlayerService : Service() {
                         registarLocalizacion()
                         conteoEnvioMensaje = 2
                     }
-
                 }
 
                 if (direction == +1) {
@@ -163,8 +162,7 @@ class PlayerService : Service() {
         }
     }
 
-    private class miLocalizacionLitener() :
-        LocationListener {
+    private class miLocalizacionLitener : LocationListener {
 
         var envioMensaje = 0
         var mensajesEnviados = 0
@@ -253,16 +251,12 @@ class PlayerService : Service() {
                                         Log.d("reportecreado", ciudad.toString())
                                         Log.d("reportecreado", direccionEnviado.toString())
 
-
                                         creado =  SimpleDateFormat(FILENAME_FORMATt, Locale.US).format(
-                                                System.currentTimeMillis()
-                                            )
+                                                System.currentTimeMillis())
 
                                         //Log.d("createat", creado)
 
                                         mensajeApi =  "https://www.google.com/maps/search/?api=1&query=$lat,$long"
-
-
 
                                     } catch (e: Exception) {
                                         Log.d("localizacionn", e.toString())

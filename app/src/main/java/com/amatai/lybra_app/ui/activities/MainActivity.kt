@@ -1,6 +1,8 @@
 package com.amatai.lybra_app.ui.activities
 
+import android.app.Service
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.drawerlayout.widget.DrawerLayout
@@ -10,6 +12,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.amatai.lybra_app.R
+import com.amatai.lybra_app.ui.service.PlayerService
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -43,4 +46,9 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
     }
 
+    override fun onStop() {
+        super.onStop()
+        val intent = Intent(this, PlayerService::class.java )
+        startService(intent)
+    }
 }

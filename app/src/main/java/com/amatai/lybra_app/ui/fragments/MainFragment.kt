@@ -496,7 +496,6 @@ class MainFragment : Fragment(), LifecycleOwner {
         override fun onProviderEnabled(provider: String) {}
 
         override fun onProviderDisabled(provider: String) {
-
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -518,16 +517,13 @@ class MainFragment : Fragment(), LifecycleOwner {
             var job = Job()
             var uiScope = CoroutineScope(job + Dispatchers.IO)
 
-
             uiScope.launch {
                 Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
-
 
                 if (!contactosEnviarMensaje.isNullOrEmpty()) {
                     Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
                     val sms = SmsManager.getDefault()
                     Log.d("numero", contactosEnviarMensaje.toString())
-
 
                     for (i in contactosEnviarMensaje) {
                         Log.d("numero", contactosEnviarMensaje.toString())
@@ -535,7 +531,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                         val mensaje =
                             "${usuarioLogueado!!.name} puede estar en peligro, llama al ${usuarioLogueado!!.phone_number}https://www.google.com/maps/search/?api=1&query=$lat,$long"
 
-                        //
                         if (envioMensaje == 0) {
                             if (configuracion?.enviarMensaje!!) {
                                 sms.sendTextMessage(
@@ -569,7 +564,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                             //Log.d("createat", creado)
                             val mensajeApi =
                                 "https://www.google.com/maps/search/?api=1&query=$lat,$long"
-
                             if (envioMensaje == 0) {
                                 val reporte = ReportesEntity(
                                     null,
@@ -589,12 +583,11 @@ class MainFragment : Fragment(), LifecycleOwner {
                                 viewmodelMainFragment.crearRepote(reporte)
                                 ubicacion.removeUpdates(listener)
                             }
-                            envioMensaje = 1
-
                         } catch (e: Exception) {
                             Log.d("localizacionn", e.toString())
                         }
                     }
+                    envioMensaje = 1
                 }
             }
         }
