@@ -80,7 +80,7 @@ data class ContactosEntity(
     val adress: String = "",
 
     @ColumnInfo(name = "is_trusted")
-    var is_trusted: Int = 0,
+    var is_trusted: Int = 1,
 
     @ColumnInfo(name = "type_status_id")
     val type_status_id: Int = 0,
@@ -152,9 +152,6 @@ data class AudioEntity(
 @Entity(tableName = "resportes")
 data class ReportesEntity (
 
-    @PrimaryKey
-    val llavePrimariaLocal: Int? = null,
-
     @ColumnInfo(name = "estado")
     val estado: Int? = null,
 
@@ -176,8 +173,8 @@ data class ReportesEntity (
     @ColumnInfo(name = "created_at")
     val created_at:String? = null,
 
-    @ColumnInfo(name = "created_rg")
-    val created_rg:String? = null,
+    @PrimaryKey
+    val created_rg:String,
 
     @ColumnInfo(name = "updated_at")
     val updated_at:String? = null,
@@ -206,7 +203,10 @@ data class Configuracion(
     val enviarMensaje:Boolean? = false,
 
     @ColumnInfo(name = "activarNotificacion")
-    val activarNotificacion:Boolean? = false
+    val activarNotificacion:Boolean? = false,
+
+    @ColumnInfo(name = "activarServicio")
+    val activarBotonFisico:Boolean? = false
 )
 
 

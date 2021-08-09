@@ -15,6 +15,8 @@ class ViewmodelAgregarContactoFragment(private val repository: Repository) :View
         contactosEntity.user_id = MainFragment.usuarioLogueado!!.id
 
         viewModelScope.launch {
+            Log.d("WcontactoAgregado", contactosEntity.toString())
+
             repository.agregarContacto(contactosEntity)
         }
     }

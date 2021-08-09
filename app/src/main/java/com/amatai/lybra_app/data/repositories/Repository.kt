@@ -1,5 +1,6 @@
 package com.amatai.lybra_app.data.repositories
 
+import android.provider.MediaStore
 import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
@@ -82,4 +83,7 @@ interface Repository {
     suspend fun guardarAudio(audio: AudioEntity)
 
     suspend fun obtenerAudios():List<AudioEntity>
+
+    suspend fun actualizarEstadoAudioSqlite(audio: AudioEntity)
+
 }

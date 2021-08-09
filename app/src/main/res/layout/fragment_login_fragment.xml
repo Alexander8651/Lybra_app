@@ -111,6 +111,7 @@
         app:layout_constraintTop_toBottomOf="@+id/botonLogin" />
 
     <Button
+        android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_margin="20dp"
@@ -127,8 +128,8 @@
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:src="@drawable/footer_1"
+        android:layout_height="30dp"
+        android:src="@drawable/lgherr"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

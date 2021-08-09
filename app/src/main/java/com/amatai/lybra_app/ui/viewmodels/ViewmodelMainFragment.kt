@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.amatai.lybra_app.data.repositories.Repository
-import com.amatai.lybra_app.databasemanager.entities.AudioEntity
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.ReportesEntity
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
+import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databasemanager.toContactoEntityList
 import com.amatai.lybra_app.databasemanager.toReporteEntity
 import com.amatai.lybra_app.ui.fragments.MainFragment.Companion.usuarioLogueado
@@ -25,7 +22,6 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
         try {
 
             emit(repository.obtenerUsuarioLogueado())
-
 
         } catch (e: Exception) {
 
@@ -47,7 +43,7 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
 
             if (contactoSinSincreonizar.isNotEmpty()) {
 
-                //Log.d("contactosinsincreonizar", contactoSinSincreonizar.toString())
+                Log.d("contactoSincreonizado", contactoSinSincreonizar.toString())
 
                 for (i in contactoSinSincreonizar) {
 
@@ -59,26 +55,26 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
                     dataContactoSincronizar.addProperty("address", contacto.adress)
                     dataContactoSincronizar.addProperty("email", contacto.email)
                     dataContactoSincronizar.addProperty("user_id", contacto.user_id)
+                    dataContactoSincronizar.addProperty("is_trusted", contacto.is_trusted)
 
                     val contactoResponse =
                         repository.sincronizarContactosApi(dataContactoSincronizar)
                     val contactoSincronizado = ContactosEntity(
                         contacto.llavePrimariaLocal,
                         1,
-                        contactoResponse.id,
-                        contactoResponse.name,
-                        contactoResponse.email,
-                        contactoResponse.number_phone,
-                        contactoResponse.address,
-                        contactoResponse.is_trusted,
-                        contactoResponse.type_status_id,
-                        contactoResponse.user_id,
-                        contactoResponse.created_at,
-                        contactoResponse.updated_at
-
+                        contactoResponse.id!!,
+                        contactoResponse.name!!,
+                        contactoResponse.email!!,
+                        contactoResponse.number_phone!!,
+                        contactoResponse.address!!,
+                        contactoResponse.is_trusted!!,
+                        contactoResponse.type_status_id!!,
+                        contactoResponse.user_id!!,
+                        contactoResponse.created_at!!,
+                        contactoResponse.updated_at!!
                     )
 
-                    // Log.d("contactoSincreonizado", contactoResponse.toString())
+                    Log.d("contactoSincreonizado", contactoResponse.toString())
 
                     repository.actualizarContacto(contactoSincronizado)
 
@@ -131,16 +127,16 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
                         val contactosEliminado = ContactosEntity(
                             it.llavePrimariaLocal,
                             3,
-                            contactosResponseEliminado.id,
-                            contactosResponseEliminado.name,
-                            contactosResponseEliminado.email,
-                            contactosResponseEliminado.number_phone,
-                            contactosResponseEliminado.address,
-                            contactosResponseEliminado.is_trusted,
-                            contactosResponseEliminado.type_status_id,
-                            contactosResponseEliminado.user_id,
-                            contactosResponseEliminado.created_at,
-                            contactosResponseEliminado.updated_at
+                            contactosResponseEliminado.id!!,
+                            contactosResponseEliminado.name!!,
+                            contactosResponseEliminado.email!!,
+                            contactosResponseEliminado.number_phone!!,
+                            contactosResponseEliminado.address!!,
+                            contactosResponseEliminado.is_trusted!!,
+                            contactosResponseEliminado.type_status_id!!,
+                            contactosResponseEliminado.user_id!!,
+                            contactosResponseEliminado.created_at!!,
+                            contactosResponseEliminado.updated_at!!
                         )
                         //Log.d("borrado", contactosResponseEliminado.toString())
                         repository.borrarContactoSqlite(contactosEliminado)
@@ -181,16 +177,16 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
                         val contactoActualizado = ContactosEntity(
                             it.llavePrimariaLocal,
                             1,
-                            contactoResponse.id,
-                            contactoResponse.name,
-                            contactoResponse.email,
-                            contactoResponse.number_phone,
-                            contactoResponse.address,
-                            contactoResponse.is_trusted,
-                            contactoResponse.type_status_id,
-                            contactoResponse.user_id,
-                            contactoResponse.created_at,
-                            contactoResponse.updated_at
+                            contactoResponse.id!!,
+                            contactoResponse.name!!,
+                            contactoResponse.email!!,
+                            contactoResponse.number_phone!!,
+                            contactoResponse.address!!,
+                            contactoResponse.is_trusted!!,
+                            contactoResponse.type_status_id!!,
+                            contactoResponse.user_id!!,
+                            contactoResponse.created_at!!,
+                            contactoResponse.updated_at!!
                         )
 
                         Log.d("contactoActualizado", contactoActualizado.toString())
@@ -263,7 +259,6 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
                         repository.registrarReporteApi(dataReposteSincronizando)
 
                     val reporteActualizar = ReportesEntity(
-                        i.llavePrimariaLocal,
                         1,
                         reporteSincronizado.id,
                         reporteSincronizado.location,
@@ -271,7 +266,7 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
                         reporteSincronizado.latitude,
                         reporteSincronizado.user_id,
                         reporteSincronizado.created_at,
-                        reporteSincronizado.created_rg,
+                        reporteSincronizado.created_rg!!,
                         reporteSincronizado.updated_at,
                         reporteSincronizado.address,
                         reporteSincronizado.city
@@ -298,4 +293,5 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
 
         }
     }
+
 }

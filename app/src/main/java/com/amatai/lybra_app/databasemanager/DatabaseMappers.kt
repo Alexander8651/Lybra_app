@@ -1,9 +1,6 @@
 package com.amatai.lybra_app.databasemanager
 
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.ReportesEntity
-import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
+import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.requestmanager.apiresponses.ContactosResponse
 import com.amatai.lybra_app.requestmanager.apiresponses.ResportesResponse
 import com.amatai.lybra_app.requestmanager.apiresponses.UserResponse
@@ -28,21 +25,20 @@ fun List<ContactosResponse>.toContactoEntityList() = map(ContactosResponse::toCo
 fun ContactosResponse.toContactoEntity() = ContactosEntity(
     null,
     1,
-    id,
-    name,
-    email,
-    number_phone,
-    address,
-    is_trusted,
-    type_status_id,
-    user_id,
-    created_at,
-    updated_at
+    id!!,
+    name!!,
+    email!!,
+    number_phone!!,
+    address!!,
+    is_trusted!!,
+    type_status_id!!,
+    user_id!!,
+    created_at!!,
+    updated_at!!
 )
 
 fun List<ResportesResponse>.toReporteEntity() = map(ResportesResponse::toReporteEntity)
 fun ResportesResponse.toReporteEntity() = ReportesEntity(
-    null,
     1,
     id,
     location,
@@ -50,11 +46,10 @@ fun ResportesResponse.toReporteEntity() = ReportesEntity(
     latitude,
     user_id,
     created_at,
-    created_rg,
+    created_rg!!,
     updated_at,
     address,
     city
-
 )
 
 fun VideoEntity.toVideoEscondido() = VideoEntity(
@@ -73,4 +68,16 @@ fun VideoEntity.toVideoBorrado() = VideoEntity(
     llavePrimariaLocal,
     path,
     3
+)
+
+fun AudioEntity.toAudioEscondido() = AudioEntity(
+    llavePrimariaLocal,
+    path,
+    2
+)
+
+fun AudioEntity.toAudioVisible() = AudioEntity(
+    llavePrimariaLocal,
+    path,
+    1
 )

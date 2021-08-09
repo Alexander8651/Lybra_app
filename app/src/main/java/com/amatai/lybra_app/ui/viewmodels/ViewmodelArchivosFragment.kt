@@ -30,6 +30,10 @@ class ViewmodelArchivosFragment(private val repository: Repository) : ViewModel(
                     videos.add(i)
                 }
 
+                if (i.estado == 2) {
+                    repository.actualizarEstadoVideoSqlite(i)
+                }
+
                 val nombre = i.path!!.subSequence(55..64)
                 // Log.d("substring", nombre.toString())
 
@@ -46,8 +50,6 @@ class ViewmodelArchivosFragment(private val repository: Repository) : ViewModel(
                 }
 
                  */
-
-
             }
             emit(videos)
         } catch (e: Exception) {

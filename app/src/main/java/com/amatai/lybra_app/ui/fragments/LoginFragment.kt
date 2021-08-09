@@ -20,9 +20,9 @@ import com.amatai.lybra_app.R
 import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
 import com.amatai.lybra_app.databasemanager.AppDatabase
+import com.amatai.lybra_app.databasemanager.entities.Configuracion
 import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
 import com.amatai.lybra_app.ui.activities.MainActivity
-import com.amatai.lybra_app.ui.service.PlayerService
 import com.amatai.lybra_app.ui.viewmodels.VMFactory
 import com.amatai.lybra_app.ui.viewmodels.ViewmodelLogin
 import com.google.gson.JsonObject
@@ -44,15 +44,30 @@ class LoginFragment : Fragment() {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.VIBRATE
         )
 
     private val REQUEST_CODE_PERMISSIONS = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+        viewmodelLogin.obtenerConfiguracion.observe(requireActivity(), androidx.lifecycle.Observer {
+            if (it == null){
+
+                val configuracion = Configuracion(
+                    1,
+                    true,
+                    true,
+                    true,
+                    true,
+                    false
+                )
+
+                viewmodelLogin.guardarConfiguracion(configuracion)
+
+            }
+        })
     }
 
     override fun onCreateView(
@@ -92,7 +107,14 @@ class LoginFragment : Fragment() {
         })
 
         botonRegistrarse.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragmentFragment_to_registrarseFragment)
+            val bundle = Bundle()
+            bundle.putString("url","https://recepciondecasos.corporacionochodemarzo.org/register")
+            findNavController().navigate(R.id.action_loginFragmentFragment_to_registrarseFragment, bundle)
+        }
+        video.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("url","https://tutoriales.corporacionochodemarzo.org/tutorialapiindex.php")
+            findNavController().navigate(R.id.action_loginFragmentFragment_to_registrarseFragment, bundle)
         }
 
         botonLogin.setOnClickListener {

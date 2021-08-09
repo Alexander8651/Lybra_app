@@ -59,13 +59,13 @@ interface AppDao{
     @Update
     suspend fun actualizarEstadoVideo(videoEntity: VideoEntity)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun agredarReportes(reportes:List<ReportesEntity>)
 
     @Query("SELECT * FROM resportes")
     suspend fun obtenerReportes():List<ReportesEntity>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun agredarReporte(reportes:ReportesEntity)
 
     @Query("SELECT * FROM resportes WHERE id == 0")
@@ -88,6 +88,9 @@ interface AppDao{
 
     @Insert
     suspend fun guardarAudio(audio: AudioEntity)
+
+    @Update
+    suspend fun actualizarAudio(audio: AudioEntity)
 
     @Query("SELECT * FROM audioentity ")
     suspend fun obtenerAudios():List<AudioEntity>

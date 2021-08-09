@@ -53,7 +53,7 @@ class DirectorioFragment : Fragment() {
                 adapter = adapterDirectorio
             }
             adapterDirectorio.submitList(it)
-            Log.d("directorioaao", it.toString())
+            Log.d("directorioaaopeprprpfgk", it.toString())
         })
 
         bindingDirectorioFragment.agregarContacto.setOnClickListener {

@@ -5,13 +5,11 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
 import android.media.MediaRecorder
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Environment
-import android.os.Handler
+import android.os.*
 import android.provider.Settings
 import android.telephony.SmsManager
 import android.util.Log
@@ -34,6 +32,7 @@ import com.amatai.lybra_app.databasemanager.AppDatabase
 import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databinding.FragmentMainBinding
 import com.amatai.lybra_app.ui.activities.MainActivity
+import com.amatai.lybra_app.ui.service.PlayerService
 import com.amatai.lybra_app.ui.viewmodels.VMFactory
 import com.amatai.lybra_app.ui.viewmodels.ViewmodelMainFragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -63,20 +62,16 @@ class MainFragment : Fragment(), LifecycleOwner {
         var sessionLogueo: String? = null
         var usuarioLogueado: UsuarioLogueado? = null
         var geocoder: Geocoder? = null
-
         lateinit var contextFragment: Context
         lateinit var contactosEnviarMensaje: List<ContactosEntity>
         lateinit var ubicacion: LocationManager
-
         var configuracion: Configuracion? = null
-
-
+        lateinit var contextxt: Context
+        var ultimaLocalizacion: Location? = null
     }
 
     lateinit var recorder: MediaRecorder
     lateinit var archivo: File
-
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
@@ -89,21 +84,18 @@ class MainFragment : Fragment(), LifecycleOwner {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.VIBRATE
         )
 
     private val REQUEST_CODE_PERMISSIONS = 10
-
     lateinit var binding: FragmentMainBinding
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
-    private val FILENAME_FORMATt = "yyyy-MM dd-HH-mm"
     val COUNTDOWN_TIME_VIDEO_RECORDED = 600000L
     lateinit var timerGrabancionVideo: CountDownTimer
     lateinit var videoCapture: VideoCapture
     var grabando = false
     val ONE_SECOND = 1000L
-    val COUNTDOWN_TIME = 3000L
-    lateinit var timer: CountDownTimer
 
     var contadorInicioGrabacion = 0
 
@@ -125,6 +117,9 @@ class MainFragment : Fragment(), LifecycleOwner {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        contextxt = requireActivity()
+
         setHasOptionsMenu(true)
         binding = FragmentMainBinding.inflate(inflater, container, false)
         geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -132,13 +127,6 @@ class MainFragment : Fragment(), LifecycleOwner {
         contextFragment = requireContext()
 
         recorder = MediaRecorder()
-
-
-        Log.d(
-            "providersss",
-            ubicacion.isProviderEnabled(LocationManager.PASSIVE_PROVIDER).toString()
-        )
-
 
         context ?: binding.root
         inicializarLocationRequest()
@@ -157,8 +145,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                     Log.d("meejecuto", it.toString())
                 })
 
-
-
         miLocalizacionLitener.toastDesplegado.observe(
             viewLifecycleOwner,
             androidx.lifecycle.Observer {
@@ -168,7 +154,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                     miLocalizacionLitener.toastDesplegado.value = 0
                 }
             })
-
 
         viewmodelMainFragment.obtenerUsuarioLogueado.observe(
             viewLifecycleOwner,
@@ -185,7 +170,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                 sessionLogueo = it.access_token
                 Log.d("tokennn", sessionLogueo!!)
                 viewmodelMainFragment.listarReporte(sessionLogueo!!)
-
             })
 
         (activity as MainActivity).supportActionBar!!.title = ""
@@ -198,8 +182,7 @@ class MainFragment : Fragment(), LifecycleOwner {
             binding.grabandoVideo.visibility = View.GONE
         }
 
-      bontonPanico()
-
+        bontonPanico()
 
         binding.botonPararGrabacion.setOnClickListener {
             videoCapture.stopRecording()
@@ -211,6 +194,24 @@ class MainFragment : Fragment(), LifecycleOwner {
             }
         }
 
+        viewmodelMainFragment.obtenerConfiguracion.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+
+            val intent = Intent(requireContext(), PlayerService::class.java)
+
+            if (it.activarBotonFisico!!) {
+                requireActivity().startService(intent)
+
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        ultimaLocalizacion = location!!
+                        Log.d("acaacacca", ultimaLocalizacion?.latitude.toString())
+
+                    }
+            }else{
+                requireContext().stopService(intent)
+            }
+        })
+
         return binding.root
     }
 
@@ -221,8 +222,8 @@ class MainFragment : Fragment(), LifecycleOwner {
 
                 configuracion = it
                 Log.d("configaracionn", configuracion.toString())
-                if (configuracion !=  null){
-                    if (configuracion!!.botonPanico!!){
+                if (configuracion != null) {
+                    if (configuracion!!.botonPanico!!) {
                         if (configuracion?.botonPanico!!) {
                             binding.botonPanico.setOnClickListener {
                                 if (contadorInicioGrabacion < 2) {
@@ -235,14 +236,14 @@ class MainFragment : Fragment(), LifecycleOwner {
                                     }
 
                                     if (contadorInicioGrabacion != 2) {
-                                        if (configuracion?.grabarVideoAudio!!){
+                                        if (configuracion?.grabarVideoAudio!!) {
                                             Toast.makeText(
                                                 requireContext(),
                                                 "presione ${presionarParaGrabar} veces para grabar",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                        }else{
-                                            if (configuracion?.enviarMensaje!!){
+                                        } else {
+                                            if (configuracion?.enviarMensaje!!) {
                                                 Toast.makeText(
                                                     requireContext(),
                                                     "presione ${presionarParaGrabar} vez para enviar mensaje",
@@ -289,8 +290,8 @@ class MainFragment : Fragment(), LifecycleOwner {
                                                     REQUEST_CODE_PERMISSIONS
                                                 )
                                             }
-                                        }else{
-                                            if (configuracion?.enviarMensaje!!){
+                                        } else {
+                                            if (configuracion?.enviarMensaje!!) {
                                                 enviarMensajeTexto()
                                             }
                                         }
@@ -301,14 +302,14 @@ class MainFragment : Fragment(), LifecycleOwner {
                         }
                     }
 
-                }else {
-                   binding.botonPanico.setOnClickListener{
-                       Toast.makeText(
-                           requireContext(),
-                           "No diste permiso del botón paníco",
-                           Toast.LENGTH_SHORT
-                       ).show()
-                   }
+                } else {
+                    binding.botonPanico.setOnClickListener {
+                        Toast.makeText(
+                            requireContext(),
+                            "No diste permiso del botón paníco",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             })
     }
@@ -326,8 +327,9 @@ class MainFragment : Fragment(), LifecycleOwner {
                 0.0F,
                 miLocalizacionLitener(viewmodelMainFragment)
             )
+
+
         } else {
-            Log.d("localizacionn", "Gps")
 
             ubicacion.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
@@ -337,16 +339,19 @@ class MainFragment : Fragment(), LifecycleOwner {
             )
         }
 
-      viewmodelMainFragment.obtenerConfiguracion.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-          Log.d("configuracionn", it.toString())
-          if (it != null){
-              if (it.grabarVideoAudio!!){
-                  if (sesionGrabacion == 1) {
-                      iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
-                  }
-              }
-          }
-      })
+        viewmodelMainFragment.obtenerConfiguracion.observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer {
+
+                if (it != null) {
+                    if (it.grabarVideoAudio!!) {
+                        if (sesionGrabacion == 1) {
+                            iniciarGrabacion(grabacion, requireContext(), binding.grabandoVideo)
+                        }
+                    }
+                }
+
+            })
     }
 
     private fun allPermissionsGranted(): Boolean {
@@ -401,11 +406,7 @@ class MainFragment : Fragment(), LifecycleOwner {
         }
         val handler = Handler()
         handler.postDelayed(runnable, 200)
-
-
     }
-
-
 
     @SuppressLint("RestrictedApi")
     fun iniciarGrabacion(grabacion: LinearLayout, context: Context, grabandoVideo: TextView) {
@@ -523,13 +524,13 @@ class MainFragment : Fragment(), LifecycleOwner {
                 if (!contactosEnviarMensaje.isNullOrEmpty()) {
                     Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
                     val sms = SmsManager.getDefault()
-                    Log.d("numero", contactosEnviarMensaje.toString())
+                    // Log.d("numero", contactosEnviarMensaje.toString())
 
                     for (i in contactosEnviarMensaje) {
-                        Log.d("numero", contactosEnviarMensaje.toString())
+                        Log.d("ENciando", i.number_phone)
                         //Log.d("numero", usuarioLogueado.toString())
                         val mensaje =
-                            "${usuarioLogueado!!.name} puede estar en peligro, llama al ${usuarioLogueado!!.phone_number}https://www.google.com/maps/search/?api=1&query=$lat,$long"
+                            "${usuarioLogueado!!.name} puede estar en peligro, llama al ${usuarioLogueado!!.phone_number} https://www.google.com/maps/search/?api=1&query=$lat,$long"
 
                         if (envioMensaje == 0) {
                             if (configuracion?.enviarMensaje!!) {
@@ -551,7 +552,7 @@ class MainFragment : Fragment(), LifecycleOwner {
                             Log.d("localizacionn", direccion.toString())
 
                             val ciudad =
-                                "Se envio desde ${direccion[0].locality + "," + direccion[0].adminArea + "," + direccion[0].countryName}"
+                                "Se envió desde ${direccion[0].locality + "," + direccion[0].adminArea + "," + direccion[0].countryName}"
                             val direccionEnviado = direccion[0].getAddressLine(0)
                             Log.d("reportecreado", ciudad.toString())
                             Log.d("reportecreado", direccionEnviado.toString())
@@ -566,7 +567,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                                 "https://www.google.com/maps/search/?api=1&query=$lat,$long"
                             if (envioMensaje == 0) {
                                 val reporte = ReportesEntity(
-                                    null,
                                     1,
                                     0,
                                     mensajeApi,
@@ -584,7 +584,9 @@ class MainFragment : Fragment(), LifecycleOwner {
                                 ubicacion.removeUpdates(listener)
                             }
                         } catch (e: Exception) {
-                            Log.d("localizacionn", e.toString())
+                           // viewmodelMainFragment.crearRepote(reporte)
+                               Log.e("esto","esto")
+                            Toast.makeText(contextxt, "No guardo reporteeeeeeeeeeeeeeeeeeee", Toast.LENGTH_SHORT).show()
                         }
                     }
                     envioMensaje = 1
@@ -593,7 +595,7 @@ class MainFragment : Fragment(), LifecycleOwner {
         }
     }
 
-    fun grabarAudio(){
+    fun grabarAudio() {
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
@@ -606,7 +608,12 @@ class MainFragment : Fragment(), LifecycleOwner {
         path.mkdir()
 
         try {
-            archivo = File.createTempFile(SimpleDateFormat("yyyyMMddHHmm", Locale.US).format(System.currentTimeMillis()), ".3gp", path)
+            archivo = File.createTempFile(
+                SimpleDateFormat(
+                    "yyyyMMddHHmm",
+                    Locale.US
+                ).format(System.currentTimeMillis()), ".3gp", path
+            )
         } catch (e: IOException) {
         }
 
@@ -623,53 +630,52 @@ class MainFragment : Fragment(), LifecycleOwner {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+        return when (item.itemId) {
 
             R.id.menuaudio -> {
-               // Log.d("configurrrr", configuracion.toString())
-                if (configuracion !=  null ){
-                 if (configuracion!!.grabarVideoAudio!!){
-                     var contador = 0
-                     grabarAudio()
+                // Log.d("configurrrr", configuracion.toString())
+                if (configuracion != null) {
+                    if (configuracion!!.grabarVideoAudio!!) {
+                        var contador = 0
+                        grabarAudio()
 
-                     val alertDialog:AlertDialog.Builder = AlertDialog.Builder(requireContext())
-                     val li = LayoutInflater.from(requireContext())
-                     val promptsView: View = li.inflate(R.layout.layoutalertdialog, null)
-                     alertDialog.setView(promptsView)
-                     val tiempograbacion = promptsView.findViewById<TextView>(R.id.tiempoGrabacion)
-                     val timer:CountDownTimer
-                     timer = object :CountDownTimer(20000, 1000){
-                         override fun onFinish() {
+                        val alertDialog: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+                        val li = LayoutInflater.from(requireContext())
+                        val promptsView: View = li.inflate(R.layout.layoutalertdialog, null)
+                        alertDialog.setView(promptsView)
+                        val tiempograbacion =
+                            promptsView.findViewById<TextView>(R.id.tiempoGrabacion)
+                        val timer: CountDownTimer
+                        timer = object : CountDownTimer(20000, 1000) {
+                            override fun onFinish() {
 
-                         }
+                            }
 
-                         override fun onTick(millisUntilFinished: Long) {
-                             contador++
-                             tiempograbacion.text = contador.toString()
-                         }
+                            override fun onTick(millisUntilFinished: Long) {
+                                contador++
+                                tiempograbacion.text = contador.toString()
+                            }
 
-                     }.start()
-                     alertDialog
-                         .setCancelable(false)
-                         .setPositiveButton("Parar"){dialog, which ->
-                             //Toast.makeText(requireContext(), archivo.absolutePath, Toast.LENGTH_SHORT).show()
-                             recorder.stop()
-                             val audioEntity = AudioEntity(
-                                 null,
-                                 archivo.toString(),
-                                 1
-                             )
-                             viewmodelMainFragment.guardarAudio(audioEntity)
-                         }.show()
-                 }
-                }else{
-                        Toast.makeText(
-                            requireContext(),
-                            "No diste permiso del botón paníco",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-
+                        }.start()
+                        alertDialog
+                            .setCancelable(false)
+                            .setPositiveButton("Parar") { dialog, which ->
+                                //Toast.makeText(requireContext(), archivo.absolutePath, Toast.LENGTH_SHORT).show()
+                                recorder.stop()
+                                val audioEntity = AudioEntity(
+                                    null,
+                                    archivo.toString(),
+                                    1
+                                )
+                                viewmodelMainFragment.guardarAudio(audioEntity)
+                            }.show()
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "No diste permiso del botón paníco",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 true
             }
