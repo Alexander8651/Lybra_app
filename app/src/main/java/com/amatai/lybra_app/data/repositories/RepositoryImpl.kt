@@ -157,4 +157,8 @@ class RepositoryImpl(private val datasource: DataSources):Repository {
     override suspend fun obtenerAudios(): List<AudioEntity> {
         return datasource.obtenerAudios()
     }
+
+    override suspend fun actualizarEstadoAudioSqlite(audio: AudioEntity) {
+        datasource.actualizarEstadoAudioSqlite(audio)
+    }
 }

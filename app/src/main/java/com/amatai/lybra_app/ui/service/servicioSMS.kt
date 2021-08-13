@@ -10,40 +10,55 @@ import android.location.Address
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcelable
+import android.net.Uri
+import android.os.*
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.telephony.SmsManager
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.media.VolumeProviderCompat
+import com.amatai.lybra_app.R
 import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
 import com.amatai.lybra_app.databasemanager.AppDatabase
+import com.amatai.lybra_app.databasemanager.entities.AudioEntity
 import com.amatai.lybra_app.databasemanager.entities.ReportesEntity
 import com.amatai.lybra_app.ui.activities.MainActivity
 import com.amatai.lybra_app.ui.fragments.MainFragment
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-var conteoEnvioMensaje = 2
 
 class PlayerService : Service() {
     private var mediaSession: MediaSessionCompat? = null
     lateinit var context: Context
     var ubicacion: LocationManager? = null
-    var broadcastReceiver:BroadcastReceiver? = null
+    var broadcastReceiver: BroadcastReceiver? = null
+
+    var recorder: MediaRecorder = MediaRecorder()
+    lateinit var archivo: File
+    var conteoEnvioMensaje = 2
+    var conteoRabacion = 0
+
 
 
     override fun onCreate() {
         super.onCreate()
         context = this
+
         mediaSession = MediaSessionCompat(this, "PlayerService")
         mediaSession!!.setFlags(
             MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
@@ -59,13 +74,13 @@ class PlayerService : Service() {
                 .build()
         )
 
-
         //this will only work on Lollipop and up, see https://code.google.com/p/android/issues/detail?id=224134
         val myVolumeProvider: VolumeProviderCompat = object : VolumeProviderCompat(
             VOLUME_CONTROL_RELATIVE,  /*max volume*/
             100,  /*initial volume level*/
             50
         ) {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onAdjustVolume(direction: Int) {
                 /*
                 -1 -- volume down
@@ -78,13 +93,58 @@ class PlayerService : Service() {
                     Log.d("sifuniono", conteoEnvioMensaje.toString())
 
                     if (conteoEnvioMensaje == 0) {
-                        registarLocalizacion()
+                        //registarLocalizacion()
+                        //val uri = Uri.parse(ActivityCompat(context.resources()))
+                        val mediaPlayer: MediaPlayer = MediaPlayer.create(context, R.raw.iphonenotificacion)
+                        mediaPlayer.start()
+
+                        Log.d("sifuniono", "grabando")
+
                         conteoEnvioMensaje = 2
+                        //vibrator.cancel()
+
+
+
+                        val runnable = Runnable {
+                            mediaPlayer.stop()
+                            grabarAudio()
+
+                        }
+                        val handler = Handler()
+                        handler.postDelayed(runnable, 1000)
+
+
                     }
                 }
 
                 if (direction == +1) {
-                    Log.d("sifuniono", conteoEnvioMensaje.toString())
+                    conteoRabacion++
+                    Log.d("sifuniono", conteoRabacion.toString())
+
+                    if (conteoRabacion == 2) {
+                        recorder.stop()
+                        val audioEntity = AudioEntity(
+                            null,
+                            archivo.toString(),
+                            1
+                        )
+
+                        val dataSources =
+                            DataSources(AppDatabase.getDatabase(MainActivity.context!!)!!)
+                        val repository = RepositoryImpl(dataSources)
+
+                        var job = Job()
+                        var uiScope = CoroutineScope(job + Dispatchers.IO)
+
+
+                        uiScope.launch {
+                            repository.guardarAudio(audioEntity)
+                        }
+
+
+                        conteoRabacion = 0
+                    }
+                    /*
                    try {
                        val launchIntent =
                            packageManager.getLaunchIntentForPackage("com.amatai.lybra_app")
@@ -92,6 +152,8 @@ class PlayerService : Service() {
                    }catch (e:java.lang.Exception){
                        Log.d("sifuniono", e.toString())
                    }
+
+                     */
                 }
             }
         }
@@ -109,6 +171,36 @@ class PlayerService : Service() {
         mediaSession!!.release()
     }
 
+    fun grabarAudio() {
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+        val path = File(
+            context.externalMediaDirs.first(),
+            "audio"
+        )
+
+        path.mkdir()
+
+        try {
+            archivo = File.createTempFile(
+                SimpleDateFormat(
+                    "yyyyMMddHHmm",
+                    Locale.US
+                ).format(System.currentTimeMillis()), ".3gp", path
+            )
+        } catch (e: IOException) {
+        }
+
+        recorder.setOutputFile(archivo.absolutePath)
+        try {
+            recorder.prepare()
+        } catch (e: IOException) {
+        }
+        recorder.start()
+    }
+
     fun installListeneIntenetConnectionr(context: Context) {
         if (broadcastReceiver == null) {
             broadcastReceiver = object : BroadcastReceiver() {
@@ -122,11 +214,9 @@ class PlayerService : Service() {
                                 + state.toString()
                     )
                     if (state === NetworkInfo.State.CONNECTED) {
-                        Log.d("conectadoaaaa","conectadoaaaa")
-                        Log.d("conectadoaaaa",
-                            extras.toString()
-                        )
+
                     } else {
+
                     }
                 }
             }
@@ -141,7 +231,7 @@ class PlayerService : Service() {
         Log.d("sifuniono", "estoy enregistrar")
 
         ubicacion = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (ubicacion!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        if (ubicacion!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             Log.d("localizacionn", "Red")
 
             ubicacion!!.requestLocationUpdates(
@@ -150,7 +240,7 @@ class PlayerService : Service() {
                 0.0F,
                 miLocalizacionLitener()
             )
-        }else{
+        } else {
             Log.d("localizacionn", "Gps")
 
             ubicacion!!.requestLocationUpdates(
@@ -160,6 +250,8 @@ class PlayerService : Service() {
                 miLocalizacionLitener()
             )
         }
+
+
     }
 
     private class miLocalizacionLitener : LocationListener {
@@ -167,6 +259,7 @@ class PlayerService : Service() {
         var envioMensaje = 0
         var mensajesEnviados = 0
         private val FILENAME_FORMATt = "yyyy-MM dd-HH-mm"
+
 
         companion object {
             val toastDesplegado = MutableLiveData<Int>()
@@ -220,10 +313,10 @@ class PlayerService : Service() {
                             if (!it.isNullOrEmpty()) {
                                 val sms = SmsManager.getDefault()
 
-                                var mensajeApi:String? = null
-                                var creado:String? = null
-                                var direccionEnviado:String? = null
-                                var ciudad:String? = null
+                                var mensajeApi: String? = null
+                                var creado: String? = null
+                                var direccionEnviado: String? = null
+                                var ciudad: String? = null
                                 for (i in it) {
                                     Log.d("numero", MainFragment.contactosEnviarMensaje.toString())
                                     //Log.d("numero", usuarioLogueado.toString())
@@ -251,12 +344,15 @@ class PlayerService : Service() {
                                         Log.d("reportecreado", ciudad.toString())
                                         Log.d("reportecreado", direccionEnviado.toString())
 
-                                        creado =  SimpleDateFormat(FILENAME_FORMATt, Locale.US).format(
-                                                System.currentTimeMillis())
+                                        creado =
+                                            SimpleDateFormat(FILENAME_FORMATt, Locale.US).format(
+                                                System.currentTimeMillis()
+                                            )
 
                                         //Log.d("createat", creado)
 
-                                        mensajeApi =  "https://www.google.com/maps/search/?api=1&query=$lat,$long"
+                                        mensajeApi =
+                                            "https://www.google.com/maps/search/?api=1&query=$lat,$long"
 
                                     } catch (e: Exception) {
                                         Log.d("localizacionn", e.toString())
@@ -265,7 +361,6 @@ class PlayerService : Service() {
 
                                 if (envioMensaje == 0) {
                                     val reporte = ReportesEntity(
-                                        null,
                                         1,
                                         0,
                                         mensajeApi,
@@ -273,7 +368,7 @@ class PlayerService : Service() {
                                         lat.toString(),
                                         usuarioLogueado.id,
                                         creado,
-                                        creado,
+                                        creado!!,
                                         direccionEnviado.toString(),
                                         ciudad
                                     )

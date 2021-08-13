@@ -110,7 +110,7 @@
 
                 <Button
                     android:id="@+id/registrarmeboton"
-                    android:layout_width="115dp"
+                    android:layout_width="125dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:backgroundTint="@android:color/holo_purple"

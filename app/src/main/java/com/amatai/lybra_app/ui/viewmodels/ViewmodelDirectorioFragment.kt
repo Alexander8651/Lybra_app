@@ -16,7 +16,6 @@ class ViewmodelDirectorioFragment(private val repository: Repository) : ViewMode
             val directotio:MutableList<ContactosEntity> = mutableListOf()
 
             val directorio = repository.obtenerDirectorioSqlite()
-                Log.d("ditesss", directorio.toString())
 
                 directorio.map {
                     if (it.estadoContacto != 3){

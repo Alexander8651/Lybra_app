@@ -125,7 +125,7 @@
          android:layout_gravity="center_horizontal"
          android:layout_marginTop="10dp"
          android:padding="4dp"
-         android:text="Guardar configuracion"/>
+         android:text="Guardar configuración"/>
 
      <Button
          android:id="@+id/actualizarConfiguracion"

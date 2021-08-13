@@ -1,21 +1,20 @@
 package com.amatai.lybra_app.data
 
 import android.util.Log
-import androidx.room.Insert
 import com.amatai.lybra_app.databasemanager.AppDatabase
 import com.amatai.lybra_app.databasemanager.entities.*
+import com.amatai.lybra_app.databasemanager.toAudioEscondido
 import com.amatai.lybra_app.databasemanager.toVideoEscondido
 import com.amatai.lybra_app.requestmanager.RetrofitService
 import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
-import retrofit2.http.Query
 import java.text.SimpleDateFormat
 
 class DataSources (private val appDatabase: AppDatabase){
 
     private val FILENAME_FORMAT = "yyyy-MM-dd"
+    private val FILENAME_FORMATAUDIO = "yyyyMMdd"
 
     suspend fun login(dataLogueo:JsonObject):LogueoResponse{
         return RetrofitService.retrofitService.login(dataLogueo).await()
@@ -191,6 +190,24 @@ class DataSources (private val appDatabase: AppDatabase){
         return appDatabase.appDao().obtenerAudios()
     }
 
+    suspend fun actualizarEstadoAudioSqlite(audioEntity: AudioEntity) {
+        val nombre = audioEntity.path!!.subSequence(61..68 )
 
+        //Log.d("substring", videoEntity.path)
+        var audio: AudioEntity? = null
 
+        val fecha = SimpleDateFormat(FILENAME_FORMATAUDIO).format(System.currentTimeMillis())
+        Log.d("substring", fecha)
+        Log.d("substring", nombre.toString())
+
+        if (nombre == fecha){
+            audio = audioEntity.toAudioEscondido()
+        }else{
+            // val path:String = videoEntity.path
+            // val video:File = File(path)
+            //video.delete()
+            //videoEntity.toVideoBorrado()
+        }
+        appDatabase.appDao().actualizarAudio(audio!!)
+    }
 }

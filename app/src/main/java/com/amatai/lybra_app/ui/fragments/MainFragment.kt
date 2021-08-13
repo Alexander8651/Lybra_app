@@ -3,15 +3,13 @@ package com.amatai.lybra_app.ui.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Service
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
 import android.location.*
 import android.media.MediaRecorder
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Environment
-import android.os.Handler
+import android.os.*
 import android.provider.Settings
 import android.telephony.SmsManager
 import android.util.Log
@@ -22,6 +20,7 @@ import android.widget.Toast
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -63,14 +62,11 @@ class MainFragment : Fragment(), LifecycleOwner {
         var sessionLogueo: String? = null
         var usuarioLogueado: UsuarioLogueado? = null
         var geocoder: Geocoder? = null
-
         lateinit var contextFragment: Context
         lateinit var contactosEnviarMensaje: List<ContactosEntity>
         lateinit var ubicacion: LocationManager
-
         var configuracion: Configuracion? = null
-
-
+        lateinit var contextxt: Context
     }
 
     lateinit var recorder: MediaRecorder
@@ -89,7 +85,8 @@ class MainFragment : Fragment(), LifecycleOwner {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.VIBRATE
         )
 
     private val REQUEST_CODE_PERMISSIONS = 10
@@ -125,6 +122,9 @@ class MainFragment : Fragment(), LifecycleOwner {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        contextxt = requireActivity()
+
         setHasOptionsMenu(true)
         binding = FragmentMainBinding.inflate(inflater, container, false)
         geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -133,12 +133,10 @@ class MainFragment : Fragment(), LifecycleOwner {
 
         recorder = MediaRecorder()
 
-
         Log.d(
             "providersss",
             ubicacion.isProviderEnabled(LocationManager.PASSIVE_PROVIDER).toString()
         )
-
 
         context ?: binding.root
         inicializarLocationRequest()
@@ -185,7 +183,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                 sessionLogueo = it.access_token
                 Log.d("tokennn", sessionLogueo!!)
                 viewmodelMainFragment.listarReporte(sessionLogueo!!)
-
             })
 
         (activity as MainActivity).supportActionBar!!.title = ""
@@ -200,7 +197,6 @@ class MainFragment : Fragment(), LifecycleOwner {
 
       bontonPanico()
 
-
         binding.botonPararGrabacion.setOnClickListener {
             videoCapture.stopRecording()
             timerGrabancionVideo.cancel()
@@ -210,7 +206,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                 ubicacion.removeUpdates(miLocalizacionLitener.remover!!)
             }
         }
-
         return binding.root
     }
 
@@ -523,13 +518,13 @@ class MainFragment : Fragment(), LifecycleOwner {
                 if (!contactosEnviarMensaje.isNullOrEmpty()) {
                     Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
                     val sms = SmsManager.getDefault()
-                    Log.d("numero", contactosEnviarMensaje.toString())
+                   // Log.d("numero", contactosEnviarMensaje.toString())
 
                     for (i in contactosEnviarMensaje) {
-                        Log.d("numero", contactosEnviarMensaje.toString())
+                        Log.d("ENciando", i.number_phone)
                         //Log.d("numero", usuarioLogueado.toString())
                         val mensaje =
-                            "${usuarioLogueado!!.name} puede estar en peligro, llama al ${usuarioLogueado!!.phone_number}https://www.google.com/maps/search/?api=1&query=$lat,$long"
+                            "${usuarioLogueado!!.name} puede estar en peligro, llama al ${usuarioLogueado!!.phone_number} https://www.google.com/maps/search/?api=1&query=$lat,$long"
 
                         if (envioMensaje == 0) {
                             if (configuracion?.enviarMensaje!!) {
@@ -551,7 +546,7 @@ class MainFragment : Fragment(), LifecycleOwner {
                             Log.d("localizacionn", direccion.toString())
 
                             val ciudad =
-                                "Se envio desde ${direccion[0].locality + "," + direccion[0].adminArea + "," + direccion[0].countryName}"
+                                "Se envió desde ${direccion[0].locality + "," + direccion[0].adminArea + "," + direccion[0].countryName}"
                             val direccionEnviado = direccion[0].getAddressLine(0)
                             Log.d("reportecreado", ciudad.toString())
                             Log.d("reportecreado", direccionEnviado.toString())
@@ -566,7 +561,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                                 "https://www.google.com/maps/search/?api=1&query=$lat,$long"
                             if (envioMensaje == 0) {
                                 val reporte = ReportesEntity(
-                                    null,
                                     1,
                                     0,
                                     mensajeApi,
@@ -668,8 +662,6 @@ class MainFragment : Fragment(), LifecycleOwner {
                             "No diste permiso del botón paníco",
                             Toast.LENGTH_SHORT
                         ).show()
-
-
                 }
                 true
             }

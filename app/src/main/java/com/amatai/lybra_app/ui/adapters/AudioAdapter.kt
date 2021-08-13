@@ -65,6 +65,12 @@ class AudioAdapter:ListAdapter<AudioEntity, AudioAdapter.Viewholder>(AudioDiffUt
             binding.itemaudio = item
             binding.executePendingBindings()
 
+            val datasource = DataSources(AppDatabase.getDatabase(itemView.context)!!)
+            val repository = RepositoryImpl(datasource)
+
+            val job = Job()
+
+            val uiScope = CoroutineScope(job + Dispatchers.IO)
 
             binding.playButton.setOnClickListener {
                 Log.d("auddididi", item.path!!)
@@ -76,8 +82,13 @@ class AudioAdapter:ListAdapter<AudioEntity, AudioAdapter.Viewholder>(AudioDiffUt
 
             }
             binding.deleteButton.setOnClickListener {
+                Log.d("videoseliminado", item.toString())
+                uiScope.launch {
 
-
+                    repository.actualizarEstadoAudioSqlite(item)
+                }
+                //it.findNavController().navigateUp()
+                Toast.makeText(itemView.context, "Se elimino el audio", Toast.LENGTH_SHORT).show()
             }
 
 
