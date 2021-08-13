@@ -23,7 +23,6 @@ class ArchivosDetalleFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
             video = it.getParcelable("archivo")!!
         }
     }

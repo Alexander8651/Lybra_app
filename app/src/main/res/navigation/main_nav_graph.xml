@@ -27,6 +27,9 @@
         <action
             android:id="@+id/action_mainFragment_to_mainArchivosFragment"
             app:destination="@id/mainArchivosFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_videoFragment2"
+            app:destination="@id/videoFragment2" />
     </fragment>
     <fragment
         android:id="@+id/salirFragment"
@@ -91,4 +94,9 @@
             android:id="@+id/action_mainArchivosFragment_to_archivosDetalleFragment"
             app:destination="@id/archivosDetalleFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/videoFragment2"
+        android:name="com.amatai.lybra_app.ui.fragments.VideoFragment"
+        android:label="Video"
+        tools:layout="@layout/fragment_video" />
 </navigation>

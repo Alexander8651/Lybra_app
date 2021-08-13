@@ -3,6 +3,7 @@ package com.amatai.lybra_app.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.*
 import com.amatai.lybra_app.data.repositories.Repository
+import com.amatai.lybra_app.databasemanager.entities.Configuracion
 import com.amatai.lybra_app.databasemanager.entities.SessionLogueo
 import com.amatai.lybra_app.databasemanager.entities.UsuarioLogueado
 import com.amatai.lybra_app.databasemanager.toUserLogueado
@@ -55,6 +56,18 @@ class ViewmodelLogin(private val repository: Repository) :ViewModel(){
         }
     }
 
+    val obtenerConfiguracion = liveData {
+        try {
+            emit(repository.obtenerConfiguraciones())
+        } catch (e: Exception) {
 
+        }
+    }
+
+    fun guardarConfiguracion(configuracion: Configuracion){
+        viewModelScope.launch {
+            repository.guardarConfiguraciones(configuracion)
+        }
+    }
 
 }

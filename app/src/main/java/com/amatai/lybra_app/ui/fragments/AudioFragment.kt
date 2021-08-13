@@ -15,17 +15,6 @@ import com.amatai.lybra_app.ui.adapters.AudioAdapter
 import com.amatai.lybra_app.ui.viewmodels.VMFactory
 import com.amatai.lybra_app.ui.viewmodels.ViewmodelAudioFragment
 import kotlinx.android.synthetic.main.fragment_audio.*
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AudioFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AudioFragment : Fragment() {
 
     val viewmodelAudio by viewModels<ViewmodelAudioFragment> {

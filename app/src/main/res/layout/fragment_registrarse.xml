@@ -4,16 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragments.RegistrarseFragment">
 
-    <ScrollView
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp">
+        android:layout_height="match_parent"/>
 
+<<<<<<< HEAD
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -121,4 +117,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </ScrollView>
+=======
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
 </layout>

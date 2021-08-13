@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import com.amatai.lybra_app.R
 import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
 import com.amatai.lybra_app.databasemanager.AppDatabase
@@ -27,10 +25,15 @@ class ConfiguracionesFragment : Fragment() {
         VMFactory(RepositoryImpl(DataSources(AppDatabase.getDatabase(requireContext())!!)))
     }
 
+
+    var primerInicio = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
+
+
     }
 
     override fun onCreateView(
@@ -44,11 +47,13 @@ class ConfiguracionesFragment : Fragment() {
         val switchBoton = binding.switchBotonPanico
         val switchMensajes = binding.switchMensajes
         val switchNotificaciones = binding.switchNotificacionesApp
+        val switchServicio = binding.switchServicioApp
 
         var grabacionVideo = false
         var botonpanico = false
         var mensajes = false
         var notificaciones = false
+        var servicio = false
 
         binding.guardarConfiguracion.setOnClickListener {
 
@@ -56,17 +61,19 @@ class ConfiguracionesFragment : Fragment() {
             botonpanico = switchBoton.isChecked
             mensajes = switchMensajes.isChecked
             notificaciones = switchNotificaciones.isChecked
+            servicio = switchServicio.isChecked
 
             var configuracion = Configuracion(
                 1,
                 grabacionVideo,
                 botonpanico,
                 mensajes,
-                notificaciones
+                notificaciones,
+                true
             )
-            Log.d("configuracionnn", configuracion.toString())
+            Log.d("configuracionnn", servicio.toString())
 
-            viewmodel.guardarConfiguracion(configuracion)
+            viewmodel.actualizarConfiguracion(configuracion)
             Toast.makeText(requireContext(), "Se guardo configuracion", Toast.LENGTH_SHORT).show()
 
             requireActivity().finish()
@@ -84,6 +91,7 @@ class ConfiguracionesFragment : Fragment() {
                 binding.switchBotonPanico.isChecked = it.botonPanico!!
                 binding.switchMensajes.isChecked = it.enviarMensaje!!
                 binding.switchNotificacionesApp.isChecked = it.activarNotificacion!!
+                binding.switchServicioApp.isChecked = it.activarBotonFisico!!
 
                 Log.d("configuracionobtenida", it.toString())
             }
@@ -95,20 +103,21 @@ class ConfiguracionesFragment : Fragment() {
             botonpanico = switchBoton.isChecked
             mensajes = switchMensajes.isChecked
             notificaciones = switchNotificaciones.isChecked
+            servicio = switchServicio.isChecked
 
             var configuracion = Configuracion(
                 1,
                 grabacionVideo,
                 botonpanico,
                 mensajes,
-                notificaciones
+                notificaciones,
+                servicio
             )
             Log.d("configuracionnn", configuracion.toString())
             viewmodel.actualizarConfiguracion(configuracion)
 
             Toast.makeText(requireContext(), "Se actualizo la configuracion", Toast.LENGTH_SHORT)
                 .show()
-            //findNavController().navigateUp()
             requireActivity().finish()
             var intet = Intent(requireContext(), LoginActivity::class.java)
             requireContext().startActivity(intet)

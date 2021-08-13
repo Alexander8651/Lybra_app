@@ -203,7 +203,10 @@ data class Configuracion(
     val enviarMensaje:Boolean? = false,
 
     @ColumnInfo(name = "activarNotificacion")
-    val activarNotificacion:Boolean? = false
+    val activarNotificacion:Boolean? = false,
+
+    @ColumnInfo(name = "activarServicio")
+    val activarBotonFisico:Boolean? = false
 )
 
 

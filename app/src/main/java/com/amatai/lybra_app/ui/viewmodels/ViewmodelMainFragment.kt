@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.amatai.lybra_app.data.repositories.Repository
-import com.amatai.lybra_app.databasemanager.entities.AudioEntity
-import com.amatai.lybra_app.databasemanager.entities.ContactosEntity
-import com.amatai.lybra_app.databasemanager.entities.ReportesEntity
-import com.amatai.lybra_app.databasemanager.entities.VideoEntity
+import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databasemanager.toContactoEntityList
 import com.amatai.lybra_app.databasemanager.toReporteEntity
 import com.amatai.lybra_app.ui.fragments.MainFragment.Companion.usuarioLogueado
@@ -296,4 +293,5 @@ class ViewmodelMainFragment(private val repository: Repository) : ViewModel() {
 
         }
     }
+
 }

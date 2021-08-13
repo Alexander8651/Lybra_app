@@ -1,10 +1,15 @@
 package com.amatai.lybra_app.data
 
 import android.util.Log
+<<<<<<< HEAD
 import com.amatai.lybra_app.databasemanager.AppDatabase
 import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databasemanager.toAudioEscondido
 import com.amatai.lybra_app.databasemanager.toVideoEscondido
+=======
+import com.amatai.lybra_app.databasemanager.*
+import com.amatai.lybra_app.databasemanager.entities.*
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
 import com.amatai.lybra_app.requestmanager.RetrofitService
 import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
@@ -118,6 +123,7 @@ class DataSources (private val appDatabase: AppDatabase){
          if (nombre == fecha){
              video = videoEntity.toVideoEscondido()
         }else{
+             video = videoEntity.toVideoVisible()
 
            // val path:String = videoEntity.path
            // val video:File = File(path)
@@ -195,6 +201,7 @@ class DataSources (private val appDatabase: AppDatabase){
 
         //Log.d("substring", videoEntity.path)
         var audio: AudioEntity? = null
+<<<<<<< HEAD
 
         val fecha = SimpleDateFormat(FILENAME_FORMATAUDIO).format(System.currentTimeMillis())
         Log.d("substring", fecha)
@@ -207,6 +214,19 @@ class DataSources (private val appDatabase: AppDatabase){
             // val video:File = File(path)
             //video.delete()
             //videoEntity.toVideoBorrado()
+=======
+
+        val fecha = SimpleDateFormat(FILENAME_FORMATAUDIO).format(System.currentTimeMillis())
+        Log.d("substring", fecha)
+        Log.d("substring", nombre.toString())
+
+        if (nombre == fecha){
+            audio = audioEntity.toAudioEscondido()
+        }else{
+
+            audio = audioEntity.toAudioVisible()
+            Log.d("substringaca", nombre.toString())
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
         }
         appDatabase.appDao().actualizarAudio(audio!!)
     }

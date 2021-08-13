@@ -25,14 +25,11 @@
         <activity android:name=".ui.activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <service android:name=".ui.service.PlayerService" />
     </application>
-
 </manifest>

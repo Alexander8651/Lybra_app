@@ -74,6 +74,12 @@ class PlayerService : Service() {
                 .build()
         )
 
+<<<<<<< HEAD
+=======
+        var grabando:Boolean? = null
+
+
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
         //this will only work on Lollipop and up, see https://code.google.com/p/android/issues/detail?id=224134
         val myVolumeProvider: VolumeProviderCompat = object : VolumeProviderCompat(
             VOLUME_CONTROL_RELATIVE,  /*max volume*/
@@ -88,10 +94,12 @@ class PlayerService : Service() {
                 0 -- volume button released
                  */
 
+
                 if (direction == -1) {
                     conteoEnvioMensaje--
                     Log.d("sifuniono", conteoEnvioMensaje.toString())
 
+<<<<<<< HEAD
                     if (conteoEnvioMensaje == 0) {
                         //registarLocalizacion()
                         //val uri = Uri.parse(ActivityCompat(context.resources()))
@@ -154,6 +162,152 @@ class PlayerService : Service() {
                    }
 
                      */
+=======
+                   if (grabando==null){
+
+                       if (conteoEnvioMensaje == 0) {
+                           val mediaPlayer: MediaPlayer = MediaPlayer.create(context, R.raw.iphonenotificacion)
+                           mediaPlayer.start()
+                           grabando = true
+
+                           conteoEnvioMensaje = 2
+
+                           val runnable = Runnable {
+                               mediaPlayer.stop()
+                               grabarAudio()
+
+                           }
+                           val handler = Handler()
+                           handler.postDelayed(runnable, 1000)
+
+                           conteoRabacion = 0
+
+
+                       }
+                   }
+                }
+
+                if (direction == +1) {
+
+                    var envioMensaje = 0
+                    var mensajesEnviados = 0
+                    val FILENAME_FORMATt = "yyyy-MM dd-HH-mm"
+                    conteoRabacion++
+                    Log.d("sifuniono", grabando.toString())
+
+
+                    if (grabando!!){
+
+                        Log.d("sifuniono", conteoRabacion.toString())
+
+                        if (conteoRabacion == 2) {
+                            val mediaPlayer: MediaPlayer = MediaPlayer.create(context, R.raw.iphonenotificacion)
+                            mediaPlayer.start()
+                            recorder.stop()
+                            val audioEntity = AudioEntity(
+                                null,
+                                archivo.toString(),
+                                1
+                            )
+
+                            val dataSources =
+                                DataSources(AppDatabase.getDatabase(MainActivity.context!!)!!)
+                            val repository = RepositoryImpl(dataSources)
+
+                            var job = Job()
+                            var uiScope = CoroutineScope(job + Dispatchers.IO)
+
+
+                            uiScope.launch {
+                                repository.guardarAudio(audioEntity)
+                            }
+
+                            uiScope.launch {
+
+                                var usuarioLogueado = repository.obtenerUsuarioLogueado()
+                                val obtenerDirectorioSqlite = repository.obtenerContactosConfianzaSqlite()
+
+                                obtenerDirectorioSqlite.collect {
+
+                                    if (mensajesEnviados == 0) {
+                                        if (!it.isNullOrEmpty()) {
+                                            val sms = SmsManager.getDefault()
+
+                                            var mensajeApi: String? = null
+                                            var creado: String? = null
+                                            var direccionEnviado: String? = null
+                                            var ciudad: String? = null
+                                            for (i in it) {
+                                                Log.d("numero", MainFragment.contactosEnviarMensaje.toString())
+                                                //Log.d("numero", usuarioLogueado.toString())
+                                                val mensaje =
+                                                    "${MainFragment.usuarioLogueado!!.name} puede estar en peligro, llama al ${MainFragment.usuarioLogueado!!.phone_number}https://www.google.com/maps/search/?api=1&query=${MainFragment.ultimaLocalizacion!!.latitude},${MainFragment.ultimaLocalizacion!!.longitude}"
+
+                                                //
+                                                sms.sendTextMessage(
+                                                    i.number_phone,
+                                                    null,
+                                                    mensaje,
+                                                    null,
+                                                    null
+                                                )
+
+                                                try {
+                                                    var direccion: List<Address> =
+                                                        MainFragment.geocoder!!.getFromLocation(MainFragment.ultimaLocalizacion!!.latitude, MainFragment.ultimaLocalizacion!!.longitude, 1)
+
+                                                    Log.d("localizacionn", direccion.toString())
+
+                                                    ciudad =
+                                                        "Se envio desde ${direccion[0].locality + "," + direccion[0].adminArea + "," + direccion[0].countryName}"
+                                                    direccionEnviado = direccion[0].getAddressLine(0)
+                                                    Log.d("reportecreado", ciudad.toString())
+                                                    Log.d("reportecreado", direccionEnviado.toString())
+
+                                                    creado =
+                                                        SimpleDateFormat(FILENAME_FORMATt, Locale.US).format(
+                                                            System.currentTimeMillis()
+                                                        )
+
+                                                    //Log.d("createat", creado)
+
+                                                    mensajeApi =
+                                                        "https://www.google.com/maps/search/?api=1&query=${MainFragment.ultimaLocalizacion!!.latitude},${MainFragment.ultimaLocalizacion!!.longitude}"
+
+                                                } catch (e: Exception) {
+                                                    Log.d("localizacionn", e.toString())
+                                                }
+                                            }
+
+                                            if (envioMensaje == 0) {
+                                                val reporte = ReportesEntity(
+                                                    1,
+                                                    0,
+                                                    mensajeApi,
+                                                    MainFragment.ultimaLocalizacion!!.longitude.toString(),
+                                                    MainFragment.ultimaLocalizacion!!.latitude.toString(),
+                                                    usuarioLogueado.id,
+                                                    creado,
+                                                    creado!!,
+                                                    direccionEnviado.toString(),
+                                                    ciudad
+                                                )
+                                                miLocalizacionLitener.toastDesplegado.postValue(1)
+                                                repository.agredarReporte(reporte)
+                                            }
+                                            envioMensaje = 1
+                                        }
+                                        mensajesEnviados = 1
+                                    }
+                                }
+                            }
+                            conteoRabacion = 0
+                        }
+                    }else{
+                            conteoEnvioMensaje = 2
+
+                    }
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
                 }
             }
         }
@@ -251,7 +405,10 @@ class PlayerService : Service() {
             )
         }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
     }
 
     private class miLocalizacionLitener : LocationListener {
@@ -295,20 +452,8 @@ class PlayerService : Service() {
                 var long = location.longitude
                 Log.d("ubicacion", "$lat $long")
 
-                val dataSources = DataSources(AppDatabase.getDatabase(MainActivity.context!!)!!)
-                val repository = RepositoryImpl(dataSources)
 
-                var job = Job()
-                var uiScope = CoroutineScope(job + Dispatchers.IO)
-
-
-                uiScope.launch {
-
-                    var usuarioLogueado = repository.obtenerUsuarioLogueado()
-                    val obtenerDirectorioSqlite = repository.obtenerContactosConfianzaSqlite()
-
-                    obtenerDirectorioSqlite.collect {
-
+<<<<<<< HEAD
                         if (mensajesEnviados == 0) {
                             if (!it.isNullOrEmpty()) {
                                 val sms = SmsManager.getDefault()
@@ -382,6 +527,8 @@ class PlayerService : Service() {
                         }
                     }
                 }
+=======
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
             }
         }
     }
