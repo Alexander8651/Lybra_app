@@ -23,4 +23,13 @@
         android:name="com.amatai.lybra_app.ui.fragments.RegistrarseFragment"
         android:label="fragment_registrarse"
         tools:layout="@layout/fragment_registrarse" />
+    <fragment
+        android:id="@+id/otroFragment"
+        android:name="com.amatai.lybra_app.OtroFragment"
+        android:label="fragment_otro"
+        tools:layout="@layout/fragment_otro" >
+        <action
+            android:id="@+id/action_otroFragment_to_loginFragmentFragment"
+            app:destination="@id/loginFragmentFragment" />
+    </fragment>
 </navigation>
