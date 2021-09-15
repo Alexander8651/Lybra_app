@@ -4,12 +4,19 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.amatai.lybra_app.R
+<<<<<<< HEAD
+import com.amatai.lybra_app.ui.service.PlayerService
+import com.amatai.lybra_app.ui.viewmodels.VMFactory
+import com.amatai.lybra_app.ui.viewmodels.ViewmodelMainFragment
+=======
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -51,6 +58,22 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
     }
 
+<<<<<<< HEAD
+    override fun onStart() {
+        super.onStart()
+        val intent = Intent(this, PlayerService::class.java )
+        stopService(intent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val intent = Intent(this, PlayerService::class.java )
+        startService(intent)
+
+    }
+
+=======
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
     private fun inicializarLocationRequest() {
         locationRequest = LocationRequest()
         //Solicita la Ubicacion cada 10 segundos

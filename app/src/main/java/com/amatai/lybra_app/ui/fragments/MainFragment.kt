@@ -3,6 +3,7 @@ package com.amatai.lybra_app.ui.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Service
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -66,7 +68,10 @@ class MainFragment : Fragment(), LifecycleOwner {
         lateinit var ubicacion: LocationManager
         var configuracion: Configuracion? = null
         lateinit var contextxt: Context
+<<<<<<< HEAD
+=======
         var ultimaLocalizacion: Location? = null
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
     }
 
     lateinit var recorder: MediaRecorder
@@ -126,6 +131,14 @@ class MainFragment : Fragment(), LifecycleOwner {
 
         recorder = MediaRecorder()
 
+<<<<<<< HEAD
+        Log.d(
+            "providersss",
+            ubicacion.isProviderEnabled(LocationManager.PASSIVE_PROVIDER).toString()
+        )
+
+=======
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
         context ?: binding.root
         inicializarLocationRequest()
         viewFinder = binding.viewFinder
@@ -180,7 +193,11 @@ class MainFragment : Fragment(), LifecycleOwner {
             binding.grabandoVideo.visibility = View.GONE
         }
 
+<<<<<<< HEAD
+      bontonPanico()
+=======
         bontonPanico()
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
 
         binding.botonPararGrabacion.setOnClickListener {
             videoCapture.stopRecording()
@@ -191,6 +208,8 @@ class MainFragment : Fragment(), LifecycleOwner {
                 ubicacion.removeUpdates(miLocalizacionLitener.remover!!)
             }
         }
+<<<<<<< HEAD
+=======
 
         viewmodelMainFragment.obtenerConfiguracion.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
 
@@ -210,6 +229,7 @@ class MainFragment : Fragment(), LifecycleOwner {
             }
         })
 
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
         return binding.root
     }
 
@@ -522,7 +542,11 @@ class MainFragment : Fragment(), LifecycleOwner {
                 if (!contactosEnviarMensaje.isNullOrEmpty()) {
                     Log.d("me ejecuto", contactosEnviarMensaje.size.toString())
                     val sms = SmsManager.getDefault()
+<<<<<<< HEAD
+                   // Log.d("numero", contactosEnviarMensaje.toString())
+=======
                     // Log.d("numero", contactosEnviarMensaje.toString())
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
 
                     for (i in contactosEnviarMensaje) {
                         Log.d("ENciando", i.number_phone)
@@ -631,6 +655,50 @@ class MainFragment : Fragment(), LifecycleOwner {
         return when (item.itemId) {
 
             R.id.menuaudio -> {
+<<<<<<< HEAD
+               // Log.d("configurrrr", configuracion.toString())
+                if (configuracion !=  null ){
+                 if (configuracion!!.grabarVideoAudio!!){
+                     var contador = 0
+                     grabarAudio()
+
+                     val alertDialog:AlertDialog.Builder = AlertDialog.Builder(requireContext())
+                     val li = LayoutInflater.from(requireContext())
+                     val promptsView: View = li.inflate(R.layout.layoutalertdialog, null)
+                     alertDialog.setView(promptsView)
+                     val tiempograbacion = promptsView.findViewById<TextView>(R.id.tiempoGrabacion)
+                     val timer:CountDownTimer
+                     timer = object :CountDownTimer(20000, 1000){
+                         override fun onFinish() {
+
+                         }
+
+                         override fun onTick(millisUntilFinished: Long) {
+                             contador++
+                             tiempograbacion.text = contador.toString()
+                         }
+
+                     }.start()
+                     alertDialog
+                         .setCancelable(false)
+                         .setPositiveButton("Parar"){dialog, which ->
+                             //Toast.makeText(requireContext(), archivo.absolutePath, Toast.LENGTH_SHORT).show()
+                             recorder.stop()
+                             val audioEntity = AudioEntity(
+                                 null,
+                                 archivo.toString(),
+                                 1
+                             )
+                             viewmodelMainFragment.guardarAudio(audioEntity)
+                         }.show()
+                 }
+                }else{
+                        Toast.makeText(
+                            requireContext(),
+                            "No diste permiso del botón paníco",
+                            Toast.LENGTH_SHORT
+                        ).show()
+=======
                 // Log.d("configurrrr", configuracion.toString())
                 if (configuracion != null) {
                     if (configuracion!!.grabarVideoAudio!!) {
@@ -674,6 +742,7 @@ class MainFragment : Fragment(), LifecycleOwner {
                         "No diste permiso del botón paníco",
                         Toast.LENGTH_SHORT
                     ).show()
+>>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
                 }
                 true
             }
