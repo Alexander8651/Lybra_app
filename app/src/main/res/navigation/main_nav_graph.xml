@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/otro2Fragment">
 
     <fragment
         android:id="@+id/mainFragment"
@@ -99,4 +99,13 @@
         android:name="com.amatai.lybra_app.ui.fragments.VideoFragment"
         android:label="Video"
         tools:layout="@layout/fragment_video" />
+    <fragment
+        android:id="@+id/otro2Fragment"
+        android:name="com.amatai.lybra_app.ui.Otro2Fragment"
+        android:label="fragment_otro2"
+        tools:layout="@layout/fragment_otro2" >
+        <action
+            android:id="@+id/action_otro2Fragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 </navigation>
