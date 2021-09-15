@@ -24,11 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     var locationRequest: LocationRequest? = null
 
-
     companion object{
         var context:Context? = null
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

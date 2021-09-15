@@ -49,7 +49,6 @@ import java.util.*
 
 class MainFragment : Fragment(), LifecycleOwner {
 
-
     val viewmodelMainFragment by viewModels<ViewmodelMainFragment> {
         VMFactory(
             RepositoryImpl(
@@ -74,7 +73,6 @@ class MainFragment : Fragment(), LifecycleOwner {
     lateinit var archivo: File
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-
     private val REQUIRED_PERMISSIONS =
         arrayOf(
             Manifest.permission.CAMERA,
@@ -82,7 +80,7 @@ class MainFragment : Fragment(), LifecycleOwner {
             Manifest.permission.SEND_SMS,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.READ_PHONE_STATE,
+            //Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.VIBRATE
