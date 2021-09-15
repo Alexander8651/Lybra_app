@@ -86,10 +86,8 @@ class AudioAdapter:ListAdapter<AudioEntity, AudioAdapter.Viewholder>(AudioDiffUt
                 }
                 //it.findNavController().navigateUp()
                 Toast.makeText(itemView.context, "Se elimino el audio", Toast.LENGTH_SHORT).show()
-<<<<<<< HEAD
-=======
+
                 it.findNavController().navigateUp()
->>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
             }
 
 

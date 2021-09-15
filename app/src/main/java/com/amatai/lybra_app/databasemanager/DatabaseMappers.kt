@@ -74,13 +74,10 @@ fun AudioEntity.toAudioEscondido() = AudioEntity(
     llavePrimariaLocal,
     path,
     2
-<<<<<<< HEAD
-=======
 )
 
 fun AudioEntity.toAudioVisible() = AudioEntity(
     llavePrimariaLocal,
     path,
     1
->>>>>>> 1f58dd4a5e2dd3f95e427c30b7afefa64bf5d7fb
 )
