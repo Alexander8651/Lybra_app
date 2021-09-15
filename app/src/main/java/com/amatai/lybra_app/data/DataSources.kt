@@ -6,7 +6,6 @@ import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.databasemanager.toAudioEscondido
 import com.amatai.lybra_app.databasemanager.toVideoEscondido
 import com.amatai.lybra_app.databasemanager.*
-import com.amatai.lybra_app.databasemanager.entities.*
 import com.amatai.lybra_app.requestmanager.RetrofitService
 import com.amatai.lybra_app.requestmanager.apiresponses.*
 import com.google.gson.JsonObject
