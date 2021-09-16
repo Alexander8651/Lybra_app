@@ -25,6 +25,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.navigation.fragment.findNavController
 import com.amatai.lybra_app.R
 import com.amatai.lybra_app.data.DataSources
 import com.amatai.lybra_app.data.repositories.RepositoryImpl
@@ -117,6 +118,10 @@ class MainFragment : Fragment(), LifecycleOwner {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        if (!allPermissionsGranted()) {
+            findNavController().navigate(R.id.action_mainFragment_to_otro2Fragment)
+        }
 
         contextxt = requireActivity()
 

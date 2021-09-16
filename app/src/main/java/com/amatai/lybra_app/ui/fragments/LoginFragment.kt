@@ -93,10 +93,7 @@ class LoginFragment : Fragment() {
         })
 
 
-        if (!allPermissionsGranted()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
+
 
         viewmodelLogin.obtenerUsuarioLogueado().observe(viewLifecycleOwner, Observer {
             if (it != null){
@@ -111,6 +108,13 @@ class LoginFragment : Fragment() {
             bundle.putString("url","https://recepciondecasos.corporacionochodemarzo.org/register")
             findNavController().navigate(R.id.action_loginFragmentFragment_to_registrarseFragment, bundle)
         }
+
+        politica.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("url","https://recepciondecasos.corporacionochodemarzo.org/terminosycondiciones")
+            findNavController().navigate(R.id.action_loginFragmentFragment_to_registrarseFragment, bundle)
+        }
+
         video.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("url","https://tutoriales.corporacionochodemarzo.org/tutorialapiindex.php")
@@ -150,25 +154,5 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun allPermissionsGranted(): Boolean {
-        for (permission in REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-
-            } else {
-                Toast.makeText(requireContext(),
-                    "No diste permisos",
-                    Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 }

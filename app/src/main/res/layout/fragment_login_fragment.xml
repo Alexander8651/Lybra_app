@@ -7,7 +7,7 @@
     tools:context=".ui.fragments.LoginFragment">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayoutpoli"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:background="@color/colorPrimary"
@@ -48,7 +48,7 @@
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutpoli" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edittext1"
@@ -110,20 +110,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/botonLogin" />
 
+
     <Button
         android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/boton_circular"
+        android:drawableLeft="@drawable/ic_baseline_video_call_24"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Mirar video tutorial"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@+id/politica"
+        tools:layout_editor_absoluteX="20dp" />
+
+    <Button
+        android:id="@+id/politica"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/boton_circular"
         android:gravity="center"
         android:padding="10dp"
-        android:drawableLeft="@drawable/ic_baseline_video_call_24"
-        android:text="Mirar video tutorial"
+        android:text="Política de privacidad"
         android:textColor="@android:color/black"
         app:layout_constraintTop_toBottomOf="@+id/botonRegistrarse"
         tools:layout_editor_absoluteX="20dp" />
-
 
     <ImageView
         android:id="@+id/imageView3"
