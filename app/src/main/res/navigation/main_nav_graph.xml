@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.MainFragment"
+        android:name="com.amatai.warmi.ui.fragments.MainFragment"
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_salirFragment"
@@ -36,12 +36,12 @@
     </fragment>
     <fragment
         android:id="@+id/salirFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.SalirFragment"
+        android:name="com.amatai.warmi.ui.fragments.SalirFragment"
         android:label=" Salir"
         tools:layout="@layout/fragment_salir" />
     <fragment
         android:id="@+id/personasConfianza"
-        android:name="com.amatai.lybra_app.ui.fragments.DirectorioFragment"
+        android:name="com.amatai.warmi.ui.fragments.DirectorioFragment"
         android:label="Personas de confianza"
         tools:layout="@layout/fragment_directorio">
         <action
@@ -61,36 +61,36 @@
     </fragment>
     <fragment
         android:id="@+id/agragarContactoFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.AgragarContactoFragment"
+        android:name="com.amatai.warmi.ui.fragments.AgragarContactoFragment"
         android:label="Agregar contacto"
         tools:layout="@layout/fragment_agragar_contacto" />
     <fragment
         android:id="@+id/editarContactoFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.EditarContactoFragment"
+        android:name="com.amatai.warmi.ui.fragments.EditarContactoFragment"
         tools:layout="@layout/fragment_editar_contacto" />
     <fragment
         android:id="@+id/archivosDetalleFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.ArchivosDetalleFragment"
+        android:name="com.amatai.warmi.ui.fragments.ArchivosDetalleFragment"
         android:label="fragment_archivos_detalle"
         tools:layout="@layout/fragment_archivos_detalle" />
     <fragment
         android:id="@+id/reporteEnviadosFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.ReporteEnviadosFragment"
+        android:name="com.amatai.warmi.ui.fragments.ReporteEnviadosFragment"
         android:label="Reportes"
         tools:layout="@layout/fragment_reporte_enviados" />
     <fragment
         android:id="@+id/configuracionesFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.ConfiguracionesFragment"
+        android:name="com.amatai.warmi.ui.fragments.ConfiguracionesFragment"
         android:label="Configuraciones"
         tools:layout="@layout/fragment_configuraciones" />
     <fragment
         android:id="@+id/notificacionesFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.NotificacionesFragment"
+        android:name="com.amatai.warmi.ui.fragments.NotificacionesFragment"
         android:label="Notificaciones"
         tools:layout="@layout/fragment_notificaciones" />
     <fragment
         android:id="@+id/mainArchivosFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.MainArchivosFragment"
+        android:name="com.amatai.warmi.ui.fragments.MainArchivosFragment"
         android:label="Archivos"
         tools:layout="@layout/fragment_main_archivos">
         <action
@@ -99,12 +99,12 @@
     </fragment>
     <fragment
         android:id="@+id/videoFragment2"
-        android:name="com.amatai.lybra_app.ui.fragments.VideoFragment"
+        android:name="com.amatai.warmi.ui.fragments.VideoFragment"
         android:label="Video"
         tools:layout="@layout/fragment_video" />
     <fragment
         android:id="@+id/otro2Fragment"
-        android:name="com.amatai.lybra_app.ui.Otro2Fragment"
+        android:name="com.amatai.warmi.ui.Otro2Fragment"
         android:label="fragment_otro2"
         tools:layout="@layout/fragment_otro2" >
         <action

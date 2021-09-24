@@ -6,7 +6,7 @@
     <data>
         <variable
             name="notificacion"
-            type="com.amatai.lybra_app.requestmanager.apiresponses.Notification" />
+            type="com.amatai.warmi.requestmanager.apiresponses.Notification" />
     </data>
 
    <RelativeLayout

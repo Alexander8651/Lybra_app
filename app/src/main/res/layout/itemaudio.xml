@@ -6,7 +6,7 @@
     <data>
         <variable
             name="itemaudio"
-            type="com.amatai.lybra_app.databasemanager.entities.AudioEntity" />
+            type="com.amatai.warmi.databasemanager.entities.AudioEntity" />
     </data>
 
     <RelativeLayout

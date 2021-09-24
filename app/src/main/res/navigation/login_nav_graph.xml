@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragmentFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.LoginFragment"
+        android:name="com.amatai.warmi.ui.fragments.LoginFragment"
         android:label="fragment_login_fragment"
         tools:layout="@layout/fragment_login_fragment" >
         <action
@@ -20,12 +20,12 @@
     </fragment>
     <fragment
         android:id="@+id/registrarseFragment"
-        android:name="com.amatai.lybra_app.ui.fragments.RegistrarseFragment"
+        android:name="com.amatai.warmi.ui.fragments.RegistrarseFragment"
         android:label="fragment_registrarse"
         tools:layout="@layout/fragment_registrarse" />
     <fragment
         android:id="@+id/otroFragment"
-        android:name="com.amatai.lybra_app.OtroFragment"
+        android:name="com.amatai.warmi.OtroFragment"
         android:label="fragment_otro"
         tools:layout="@layout/fragment_otro" >
         <action

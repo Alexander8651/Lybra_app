@@ -1,0 +1,29 @@
+package com.amatai.warmi.requestmanager
+
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+
+val  BASE_ROOT = "https://apipanicbutton.corporacionochodemarzo.org/"
+
+val interceptor:HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
+    this.level = HttpLoggingInterceptor.Level.BODY
+}
+
+val cliente:OkHttpClient = OkHttpClient.Builder().apply {
+    this.addInterceptor(interceptor)
+}.build()
+
+private val retrofit =  Retrofit.Builder()
+    .baseUrl(BASE_ROOT)
+    .client(cliente)
+    .addConverterFactory(GsonConverterFactory.create())
+    .addCallAdapterFactory(CoroutineCallAdapterFactory())
+    .build()
+
+object RetrofitService{
+    val retrofitService:ApiService by lazy { retrofit.create(ApiService::class.java) }
+}

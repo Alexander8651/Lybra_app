@@ -7,7 +7,7 @@
    <data>
       <variable
           name="viewModel"
-          type="com.amatai.lybra_app.ui.viewmodels.ViewmodelNotificacionesFragment" />
+          type="com.amatai.warmi.ui.viewmodels.ViewmodelNotificacionesFragment" />
    </data>
 
    <RelativeLayout

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.amatai.lybra_app.databasemanager.entities.ReportesEntity" />
+            type="com.amatai.warmi.databasemanager.entities.ReportesEntity" />
     </data>
 
     <RelativeLayout

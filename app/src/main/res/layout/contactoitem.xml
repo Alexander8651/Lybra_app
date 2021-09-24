@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.amatai.lybra_app.databasemanager.entities.ContactosEntity" />
+            type="com.amatai.warmi.databasemanager.entities.ContactosEntity" />
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
